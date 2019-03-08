@@ -1,4 +1,32 @@
 /*
+ * Copyright (C) 2018-2019 52°North Initiative for Geospatial Open Source
+ * Software GmbH
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License version 2 as published
+ * by the Free Software Foundation.
+ *
+ * If the program is linked with libraries which are licensed under one of
+ * the following licenses, the combination of the program with the linked
+ * library is not considered a "derivative work" of the program:
+ *
+ *     - Apache License, version 2.0
+ *     - Apache Software License, version 1.0
+ *     - GNU Lesser General Public License, version 3
+ *     - Mozilla Public License, versions 1.0, 1.1 and 2.0
+ *     - Common Development and Distribution License (CDDL), version 1.0
+ *
+ * Therefore the distribution of the program linked with libraries licensed
+ * under the aforementioned licenses, is permitted by the copyright holders
+ * if the distribution is compliant with both the GNU General Public
+ * License version 2 and the aforementioned licenses.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+ * Public License for more details.
+ */
+/*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -56,7 +84,7 @@ import com.querydsl.core.types.Predicate;
  * @author <a href="mailto:s.drost@52north.org">Sebastian Drost</a>
  */
 public abstract class AbstractSensorThingsEntityService<T extends JpaRepository<?, Long>, S extends IdEntity> {
-   
+
     @Autowired
     private EntityServiceRepository serviceRepository;
 
@@ -65,18 +93,18 @@ public abstract class AbstractSensorThingsEntityService<T extends JpaRepository<
     public AbstractSensorThingsEntityService(T repository) {
         this.repository = repository;
     }
-    
+
     @PostConstruct
     public void init() {
         serviceRepository.addEntityService(this);
     }
-    
+
     public abstract EntityTypes getType();
 
     /**
      * Requests the full EntityCollection
-     * 
-     * @param queryOptions
+     *
+     * @param queryOptions query options
      *
      * @return the full EntityCollection
      * @throws ODataApplicationException if the queryOptions are invalid
@@ -91,7 +119,7 @@ public abstract class AbstractSensorThingsEntityService<T extends JpaRepository<
      *            the ID of the Entity the EntityCollection is related to
      * @param sourceEntityType
      *            EntityType of the related Entity
-     * @param queryOptions
+     * @param queryOptions query optoins
      * @return the EntityCollection that is related to the given Entity
      * @throws ODataApplicationException if the queryOptions are invalid
      */
@@ -101,7 +129,7 @@ public abstract class AbstractSensorThingsEntityService<T extends JpaRepository<
     /**
      * Request the count for the EntityCollection that is related to a single
      * Entity with the given ID and type
-     * 
+     *
      * @param sourceId
      *            the ID of the Entity the EntityCollection is related to
      * @param sourceEntityType
@@ -221,7 +249,7 @@ public abstract class AbstractSensorThingsEntityService<T extends JpaRepository<
     /**
      * Get the {@link JpaRepository} for this
      * {@link AbstractSensorThingsEntityService}
-     * 
+     *
      * @return the concrete {@link JpaRepository}
      */
     public T getRepository() {
@@ -230,19 +258,19 @@ public abstract class AbstractSensorThingsEntityService<T extends JpaRepository<
 
     /**
      * Query for the number of element.
-     * 
-     * @param queryOptions
-     * 
+     *
+     * @param queryOptions query options
+     *
      * @return the existing elements
      * @throws ODataApplicationException if the queryOptions could not be parsed.
      */
     public abstract long getCount(QueryOptions queryOptions) throws ODataApplicationException;
-    
+
     /**
      * Constructs QueryDSL FilterPredicate based on given queryOptions.
-     * 
+     *
      * @param entityClass Class of the requested Entity
-     * @param queryOptions QueryOptions Object 
+     * @param queryOptions QueryOptions Object
      * @return Predicate based on FilterOption from queryOptions
      * @throws ODataApplicationException if the queryOptions are invalid
      */
@@ -251,7 +279,7 @@ public abstract class AbstractSensorThingsEntityService<T extends JpaRepository<
             return null;
         } else {
             Expression filterExpression = queryOptions.getFilterOption().getExpression();
-            
+
             FilterExpressionVisitor visitor = new FilterExpressionVisitor(entityClass, this);
             try {
                 return (Predicate) filterExpression.accept(visitor);
@@ -271,7 +299,7 @@ public abstract class AbstractSensorThingsEntityService<T extends JpaRepository<
 
     @Transactional(rollbackFor = Exception.class)
     public abstract void delete(Long id) throws ODataApplicationException;
-    
+
     protected abstract void delete(S entity) throws ODataApplicationException;
 
     protected S createOrUpdate(S entity) throws ODataApplicationException {
@@ -280,14 +308,14 @@ public abstract class AbstractSensorThingsEntityService<T extends JpaRepository<
         }
         return create(entity);
     }
-    
+
     protected void checkInlineDatastream(DatastreamEntity datastream) throws ODataApplicationException {
         if (datastream.getId() == null || datastream.isSetName() || datastream.isSetDescription() || datastream.isSetUnit()) {
             throw new ODataApplicationException("Inlined entities are not allowed for updates!",
                     HttpStatusCode.BAD_REQUEST.getStatusCode(), Locale.getDefault());
         }
     }
-    
+
     protected void checkInlineLocation(LocationEntity location) throws ODataApplicationException {
         if (location.getId() == null || location.isSetName() || location.isSetDescription()) {
             throw new ODataApplicationException("Inlined entities are not allowed for updates!",
@@ -301,14 +329,14 @@ public abstract class AbstractSensorThingsEntityService<T extends JpaRepository<
 
     /**
      * Create {@link PageRequest}
-     * 
+     *
      * @param queryOptions
      *            {@link QueryOptions} to create {@link PageRequest}
      * @return {@link PageRequest} of type {@link OffsetLimitBasedPageRequest}
      */
     protected OffsetLimitBasedPageRequest createPageableRequest(QueryOptions queryOptions) {
         int offset = queryOptions.hasSkipOption() ? queryOptions.getSkipOption().getValue() : 0;
-        
+
         Sort sort = Sort.by(Direction.ASC, "id");
         if (queryOptions.hasOrderByOption()) {
             OrderByItem orderByItem = queryOptions.getOrderByOption().getOrders().get(0);
@@ -324,7 +352,7 @@ public abstract class AbstractSensorThingsEntityService<T extends JpaRepository<
 
     /**
      * Check property for sorting if different in database
-     * 
+     *
      * @param property
      *            the sorting property to check
      * @return the databse property name

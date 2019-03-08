@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2018 52°North Initiative for Geospatial Open Source
+ * Copyright (C) 2018-2019 52°North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -81,16 +81,16 @@ public class FeatureOfInterestService
 
     @Autowired
     private DatasetRepository<DatasetEntity> datasetRepository;
-    
+
     @Autowired
     private DatastreamRepository datastreamRepository;
-    
+
     private final static FeatureOfInterestQuerySpecifications foiQS = new FeatureOfInterestQuerySpecifications();
 
     private ObservationQuerySpecifications oQS = new ObservationQuerySpecifications();
 
     private DatasetQuerySpecifications dQS = new DatasetQuerySpecifications();
-    
+
     private DatastreamQuerySpecifications dsQS = new DatastreamQuerySpecifications();
 
     public FeatureOfInterestService(FeatureOfInterestRepository repository, FeatureOfInterestMapper mapper) {
@@ -183,7 +183,7 @@ public class FeatureOfInterestService
      * Retrieves FeatureOfInterest Entity (aka Feature Entity) with Relation to
      * sourceEntity from Database. Returns empty if Feature is not found or
      * Entities are not related.
-     * 
+     *
      * @param sourceId
      *            Id of the Source Entity
      * @param sourceEntityType
@@ -220,15 +220,15 @@ public class FeatureOfInterestService
         }
     }
 
-    
+
     @Override
     public long getCount(QueryOptions queryOptions) throws ODataApplicationException {
         return getRepository().count(getFilterPredicate(AbstractFeatureEntity.class, queryOptions));
     }
-    
+
     /**
      * Constructs SQL Expression to request Entity by ID.
-     * 
+     *
      * @param id
      *            id of the requested entity
      * @return BooleanExpression evaluating to true if Entity is found and valid
@@ -306,7 +306,7 @@ public class FeatureOfInterestService
     }
 
     private void deleteRelatedObservationsAndUpdateDatasets(Long featureId) {
-        
+
         // set dataset first/last to null
         Iterable<DatasetEntity> datasets = datasetRepository.findAll(dQS.matchFeatures(Long.toString(featureId)));
         // update datasets
@@ -324,7 +324,7 @@ public class FeatureOfInterestService
             datastreamRepository.findAll(dsQS.withDataset(d.getId())).forEach(ds -> {
                 ds.getDatasets().remove(d);
                 datastreamRepository.saveAndFlush(ds);
-                
+
             });
         });
         // delete datasets
@@ -349,7 +349,7 @@ public class FeatureOfInterestService
         }
         feature.setFeatureType(format);
     }
-    
+
     private void generateIdentifier(AbstractFeatureEntity<?> feature) {
         feature.setIdentifier(JavaHelper.generateID(feature.getIdentifier()));
     }

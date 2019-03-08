@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2018 52°North Initiative for Geospatial Open Source
+ * Copyright (C) 2018-2019 52°North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -152,7 +152,7 @@ public class LocationMapper extends AbstractLocationGeometryMapper<LocationEntit
         try {
             entity.getThingEntities().forEach((en)-> {
                 set.add(en.getId());
-            }); 
+            });
             collections.put(ET_THING_NAME, new HashSet(set));
         } catch(NullPointerException e) {}
         set.clear();

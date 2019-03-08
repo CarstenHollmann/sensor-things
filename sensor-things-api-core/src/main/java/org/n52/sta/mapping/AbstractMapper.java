@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2018 52°North Initiative for Geospatial Open Source
+ * Copyright (C) 2018-2019 52°North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -316,7 +316,7 @@ public abstract class AbstractMapper<T> {
     }
 
     /**
-     * Gets a Map<K,V> that holds definitions for all related Entities of the
+     * Gets a Map&lt;K,V&gt; that holds definitions for all related Entities of the
      * requested Entity. In this Map K represents the EntityType and V the Set
      * of IDs for those Entities that has a Collection the requested Entity is
      * part of. Returns null if this Entity is not part of any collection.

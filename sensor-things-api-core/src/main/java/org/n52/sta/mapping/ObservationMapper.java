@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2018 52°North Initiative for Geospatial Open Source
+ * Copyright (C) 2018-2019 52°North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -86,10 +86,10 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 @Component
 public class ObservationMapper extends AbstractMapper<DataEntity<?>> {
-    
+
     @Autowired
     private DatastreamMapper datastreamMapper;
-    
+
     @Autowired
     private FeatureOfInterestMapper featureMapper;
 
@@ -97,7 +97,7 @@ public class ObservationMapper extends AbstractMapper<DataEntity<?>> {
         Entity entity = new Entity();
 
         entity.addProperty(new Property(null, PROP_ID, ValueType.PRIMITIVE, observation.getId()));
-        
+
         //TODO: urlencode whitespaces to allow for copy pasting into filter expression
         entity.addProperty(new Property(null, PROP_RESULT, ValueType.PRIMITIVE, this.getResult(observation).getBytes()));
 
@@ -107,8 +107,8 @@ public class ObservationMapper extends AbstractMapper<DataEntity<?>> {
 
         String phenomenonTime = DateTimeHelper.format(createPhenomenonTime(observation));
         entity.addProperty(new Property(null, PROP_PHENOMENON_TIME, ValueType.PRIMITIVE, phenomenonTime));
-        
-        
+
+
         entity.addProperty(new Property(null, PROP_VALID_TIME, ValueType.PRIMITIVE, (observation.isSetValidTime())
                                                                                     ? DateTimeHelper.format(createValidTime(observation))
                                                                                     : null));
@@ -185,7 +185,7 @@ public class ObservationMapper extends AbstractMapper<DataEntity<?>> {
         cv.getValue().add(new Property(null, null, ValueType.PRIMITIVE, createParameterProperty(p)));
         return cv;
     }
-    
+
     private Time createPhenomenonTime(DataEntity<?> observation) {
         final DateTime start = createDateTime(observation.getSamplingTimeStart());
         DateTime end;
@@ -196,7 +196,7 @@ public class ObservationMapper extends AbstractMapper<DataEntity<?>> {
         }
         return createTime(start, end);
     }
-    
+
     private Time createValidTime(DataEntity<?> observation) {
         final DateTime start = createDateTime(observation.getValidTimeStart());
         DateTime end;
@@ -222,7 +222,7 @@ public class ObservationMapper extends AbstractMapper<DataEntity<?>> {
         addResult(observation, entity);
         return observation;
     }
-    
+
     private void addResult(StaDataEntity observation, Entity entity) {
         if (checkProperty(entity, PROP_RESULT)) {
             observation.setValue(new String((byte[])getPropertyValue(entity, PROP_RESULT)));
@@ -235,7 +235,7 @@ public class ObservationMapper extends AbstractMapper<DataEntity<?>> {
             observation.setResultTime(((TimeInstant) time).getValue().toDate());
         }
     }
-    
+
     private void addValidTime(StaDataEntity observation, Entity entity) {
         if (checkProperty(entity, PROP_RESULT_TIME)) {
             Time time = parseTime(getPropertyValue(entity, PROP_RESULT_TIME));
@@ -251,7 +251,7 @@ public class ObservationMapper extends AbstractMapper<DataEntity<?>> {
 
     private void addParameter(StaDataEntity observation, Entity entity) {
         // TODO Auto-generated method stub
-        
+
     }
 
     private void addFeatureOfInterest(StaDataEntity observation, Entity entity) {
@@ -295,7 +295,7 @@ public class ObservationMapper extends AbstractMapper<DataEntity<?>> {
         }
         super.mergeSamplingTime(existing, toMerge);
     }
-    
+
     private void checkValue(DataEntity<?> existing, DataEntity<?> toMerge) throws ODataApplicationException {
         if (existing instanceof QuantityDataEntity) {
             ((QuantityDataEntity) existing)
@@ -330,7 +330,7 @@ public class ObservationMapper extends AbstractMapper<DataEntity<?>> {
         }
         return entity;
     }
-    
+
     /* (non-Javadoc)
      * @see org.n52.sta.mapping.AbstractMapper#getRelatedCollections(java.lang.Object)
      */

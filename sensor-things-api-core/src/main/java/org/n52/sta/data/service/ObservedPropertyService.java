@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2018 52°North Initiative for Geospatial Open Source
+ * Copyright (C) 2018-2019 52°North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -63,19 +63,19 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 public class ObservedPropertyService extends AbstractSensorThingsEntityService<PhenomenonRepository, PhenomenonEntity> {
 
     private ObservedPropertyMapper mapper;
-    
+
     @Autowired
     private DatastreamRepository datastreamRepository;
 
     private final static ObservedPropertyQuerySpecifications oQS = new ObservedPropertyQuerySpecifications();
 
     private final static DatastreamQuerySpecifications dQS = new DatastreamQuerySpecifications();
-    
+
     public ObservedPropertyService(PhenomenonRepository repository, ObservedPropertyMapper mapper) {
         super(repository);
         this.mapper = mapper;
     }
-    
+
     @Override
     public EntityTypes getType() {
         return EntityTypes.ObservedProperty;
@@ -153,7 +153,7 @@ public class ObservedPropertyService extends AbstractSensorThingsEntityService<P
             return null;
         }
     }
-    
+
     @Override
     public String checkPropertyName(String property) {
         switch (property) {
@@ -167,7 +167,7 @@ public class ObservedPropertyService extends AbstractSensorThingsEntityService<P
     /**
      * Retrieves ObservedPropertyEntity (aka PhenomenonEntity) with Relation to sourceEntity from Database.
      * Returns empty if Entity is not found or Entities are not related.
-     * 
+     *
      * @param sourceId Id of the Source Entity
      * @param sourceEntityType Type of the Source Entity
      * @param targetId Id of the Entity to be retrieved
@@ -182,7 +182,7 @@ public class ObservedPropertyService extends AbstractSensorThingsEntityService<P
         }
         default: return Optional.empty();
         }
-        
+
         if (targetId != null) {
             filter = filter.and(oQS.withId(targetId));
         }
@@ -191,14 +191,14 @@ public class ObservedPropertyService extends AbstractSensorThingsEntityService<P
 
     /**
      * Constructs SQL Expression to request Entity by ID.
-     * 
+     *
      * @param id id of the requested entity
      * @return BooleanExpression evaluating to true if Entity is found and valid
      */
     private BooleanExpression byId(Long id) {
         return oQS.withId(id);
     }
-    
+
     @Override
     public long getCount(QueryOptions queryOptions) throws ODataApplicationException {
         return getRepository().count(getFilterPredicate(PhenomenonEntity.class, queryOptions));
@@ -235,7 +235,7 @@ public class ObservedPropertyService extends AbstractSensorThingsEntityService<P
         throw new ODataApplicationException("Invalid http method for updating entity!",
                 HttpStatusCode.BAD_REQUEST.getStatusCode(), Locale.getDefault());
     }
-    
+
     private void checkUpdate(PhenomenonEntity entity) throws ODataApplicationException {
         if (entity instanceof ObservablePropertyEntity) {
             ObservablePropertyEntity observableProperty = (ObservablePropertyEntity) entity;
@@ -251,7 +251,7 @@ public class ObservedPropertyService extends AbstractSensorThingsEntityService<P
     protected PhenomenonEntity update(PhenomenonEntity entity) throws ODataApplicationException {
         return getRepository().save(getAsPhenomenonEntity(entity));
     }
-    
+
     @Override
     public void delete(Long id) throws ODataApplicationException {
         if (getRepository().existsById(id)) {
@@ -270,7 +270,7 @@ public class ObservedPropertyService extends AbstractSensorThingsEntityService<P
                     Locale.ROOT);
         }
     }
-    
+
     @Override
     protected void delete(PhenomenonEntity entity) throws ODataApplicationException {
         getRepository().deleteById(entity.getId());

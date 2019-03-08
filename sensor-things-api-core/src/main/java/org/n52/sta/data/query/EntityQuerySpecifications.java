@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2018 52°North Initiative for Geospatial Open Source
+ * Copyright (C) 2018-2019 52°North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -26,7 +26,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
  * Public License for more details.
  */
-
 package org.n52.sta.data.query;
 
 import java.util.Date;
@@ -78,17 +77,17 @@ public abstract class EntityQuerySpecifications<T> {
 
     /**
      * Gets Subquery returning the IDs of the Entities
-     * 
+     *
      * @param filter
      *        BooleanExpression filtering the Entites whose IDs are returned
-     * @return JPQLQuery<Long> Subquery
+     * @return JPQLQuery Subquery
      */
     public abstract JPQLQuery<Long> getIdSubqueryWithFilter(Expression<Boolean> filter);
 
     /**
      * Gets Entity-specific Filter for property with given name. Filters may not accept all BinaryOperators,
      * as they may not be defined for the datatype of the property.
-     * 
+     *
      * @param propertyName
      *        Name of the property to be filtered on
      * @param propertyValue
@@ -96,9 +95,10 @@ public abstract class EntityQuerySpecifications<T> {
      * @param operator
      *        Operator to be used for comparing propertyValue and actual Value
      * @param switched
-     *        true if Expression adheres to template: <value> <operator> <name>. False otherwise (Template
-     *        <name> <operator> <value>)
+     *        true if Expression adheres to template: &lt;value&gt; &lt;operator&gt; &lt;name&gt;. False otherwise (Template
+     *        &lt;name&gt; &lt;operator&gt; &lt;value&gt;)
      * @return BooleanExpression evaluating to true if Entity is not to be filtered out
+     * @throws ExpressionVisitException if query filter could not be build
      */
     public abstract Object getFilterForProperty(String propertyName,
                                                 Object propertyValue,
@@ -278,7 +278,7 @@ public abstract class EntityQuerySpecifications<T> {
 
     /**
      * Reverses an operator if this operator is easily revertible.
-     * 
+     *
      * @param operator
      *        to be reversed
      * @return String representation of reversed Operator

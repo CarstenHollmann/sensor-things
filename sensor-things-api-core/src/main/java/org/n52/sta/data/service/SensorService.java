@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2018 52°North Initiative for Geospatial Open Source
+ * Copyright (C) 2018-2019 52°North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -26,7 +26,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
  * Public License for more details.
  */
-
 package org.n52.sta.data.service;
 
 import java.util.Locale;
@@ -68,25 +67,25 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 public class SensorService extends AbstractSensorThingsEntityService<ProcedureRepository, ProcedureEntity> {
 
     private SensorMapper mapper;
-    
+
     @Autowired
     private FormatRepository formatRepository;
-    
+
     @Autowired(required=false)
     private ProcedureHistoryRepository procedureHistoryRepository;
-    
+
     @Autowired
     private DatastreamRepository datastreamRepository;
 
     private final static SensorQuerySpecifications sQS = new SensorQuerySpecifications();
-    
+
     private final static DatastreamQuerySpecifications dQS = new DatastreamQuerySpecifications();
 
     public SensorService(ProcedureRepository repository, SensorMapper mapper) {
         super(repository);
         this.mapper = mapper;
     }
-    
+
     @Override
     public EntityTypes getType() {
         return EntityTypes.Sensor;
@@ -185,7 +184,7 @@ public class SensorService extends AbstractSensorThingsEntityService<ProcedureRe
     /**
      * Retrieves Sensor Entity (aka Procedure Entity) with Relation to sourceEntity from Database. Returns
      * empty if Sensor is not found or Entities are not related.
-     * 
+     *
      * @param sourceId
      *        Id of the Source Entity
      * @param sourceEntityType
@@ -215,7 +214,7 @@ public class SensorService extends AbstractSensorThingsEntityService<ProcedureRe
 
     /**
      * Constructs SQL Expression to request Entity by ID.
-     * 
+     *
      * @param id
      *        id of the requested entity
      * @return BooleanExpression evaluating to true if Entity is found and valid
@@ -223,7 +222,7 @@ public class SensorService extends AbstractSensorThingsEntityService<ProcedureRe
     private BooleanExpression byId(Long id) {
         return sQS.withId(id);
     }
-    
+
     @Override
     public long getCount(QueryOptions queryOptions) throws ODataApplicationException {
         return getRepository().count(getFilterPredicate(ProcedureEntity.class, queryOptions));
@@ -278,7 +277,7 @@ public class SensorService extends AbstractSensorThingsEntityService<ProcedureRe
             }
         }
     }
-    
+
     @Override
     protected ProcedureEntity update(ProcedureEntity entity) throws ODataApplicationException {
         return getRepository().save(getAsProcedureEntity(entity));
@@ -333,13 +332,13 @@ public class SensorService extends AbstractSensorThingsEntityService<ProcedureRe
             }
         }
     }
-    
+
     private ProcedureEntity getAsProcedureEntity(ProcedureEntity sensor) {
         return  sensor instanceof SensorEntity
                 ? ((SensorEntity) sensor).asProcedureEntity()
                 : sensor;
     }
-    
+
     private AbstractSensorThingsEntityService<?, DatastreamEntity> getDatastreamService() {
         return (AbstractSensorThingsEntityService<?, DatastreamEntity>) getEntityService(
                 EntityTypes.Datastream);

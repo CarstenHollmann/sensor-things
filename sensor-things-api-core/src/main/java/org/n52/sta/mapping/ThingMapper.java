@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2018 52°North Initiative for Geospatial Open Source
+ * Copyright (C) 2018-2019 52°North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -77,10 +77,10 @@ public class ThingMapper extends AbstractMapper<ThingEntity> {
 
     @Autowired
     private JsonHelper jsonHelper;
-    
+
     @Autowired
     private LocationMapper locationMapper;
-    
+
     @Autowired
     private DatastreamMapper datastreamMapper;
 
@@ -183,7 +183,7 @@ public class ThingMapper extends AbstractMapper<ThingEntity> {
         }
         return entity;
     }
-    
+
     /* (non-Javadoc)
      * @see org.n52.sta.mapping.AbstractMapper#getRelatedCollections(java.lang.Object)
      */
@@ -192,7 +192,7 @@ public class ThingMapper extends AbstractMapper<ThingEntity> {
         Map<String, Set<Long>> collections = new HashMap<String, Set<Long>> ();
         Set<Long> set = new HashSet<Long>();
         ThingEntity entity = (ThingEntity) rawObject;
-        
+
         try {
             entity.getLocationEntities().forEach((en)-> {
                 set.add(en.getId());

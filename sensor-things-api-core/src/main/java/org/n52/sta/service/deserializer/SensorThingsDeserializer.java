@@ -1,20 +1,30 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements. See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
+ * Copyright (C) 2018-2019 52°North Initiative for Geospatial Open Source
+ * Software GmbH
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License version 2 as published
+ * by the Free Software Foundation.
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * If the program is linked with libraries which are licensed under one of
+ * the following licenses, the combination of the program with the linked
+ * library is not considered a "derivative work" of the program:
+ *
+ *     - Apache License, version 2.0
+ *     - Apache Software License, version 1.0
+ *     - GNU Lesser General Public License, version 3
+ *     - Mozilla Public License, versions 1.0, 1.1 and 2.0
+ *     - Common Development and Distribution License (CDDL), version 1.0
+ *
+ * Therefore the distribution of the program linked with libraries licensed
+ * under the aforementioned licenses, is permitted by the copyright holders
+ * if the distribution is compliant with both the GNU General Public
+ * License version 2 and the aforementioned licenses.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+ * Public License for more details.
  */
 package org.n52.sta.service.deserializer;
 
@@ -303,7 +313,7 @@ public class SensorThingsDeserializer implements ODataDeserializer {
         return parameter;
     }
 
-    /** Reads a parameter value from a String. */
+    /* Reads a parameter value from a String. */
     public Parameter parameter(final String content, final EdmParameter parameter) throws DeserializerException {
         try {
             JsonParser parser = new JsonFactory(
@@ -673,7 +683,7 @@ public class SensorThingsDeserializer implements ODataDeserializer {
     /**
      * Reads a geospatial JSON value following the GeoJSON specification defined
      * in RFC 7946.
-     * 
+     *
      * @param name
      *            property name
      * @param type
@@ -816,7 +826,7 @@ public class SensorThingsDeserializer implements ODataDeserializer {
     /**
      * Returns the primitive type's default class or the manually mapped class
      * if present.
-     * 
+     *
      * @param mapping
      * @param edmPrimitiveType
      * @return the java class to be used during deserialization
@@ -832,7 +842,7 @@ public class SensorThingsDeserializer implements ODataDeserializer {
     /**
      * Check if JsonNode is a value node (<code>jsonNode.isValueNode()</code>)
      * and if not throw an DeserializerException.
-     * 
+     *
      * @param name
      *            name of property which is checked
      * @param jsonNode
@@ -853,7 +863,7 @@ public class SensorThingsDeserializer implements ODataDeserializer {
         while (fieldsIterator.hasNext()) {
             Map.Entry<String, JsonNode> field = fieldsIterator.next();
 
-            if (field.getKey().contains(ODATA_CONTROL_INFORMATION_PREFIX) 
+            if (field.getKey().contains(ODATA_CONTROL_INFORMATION_PREFIX)
                     || field.getKey().contains(SensorThingsEdmConstants.CONTROL_ANNOTATION_PREFIX)) {
                 // Control Information is ignored for requests as per
                 // specification chapter "4.5 Control Information"
@@ -870,7 +880,7 @@ public class SensorThingsDeserializer implements ODataDeserializer {
 
     /**
      * Validates that node is empty (<code>node.size() == 0</code>).
-     * 
+     *
      * @param node
      *            node to be checked
      * @throws DeserializerException

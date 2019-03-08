@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2018 52°North Initiative for Geospatial Open Source
+ * Copyright (C) 2018-2019 52°North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -87,7 +87,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 public class ObservationService extends AbstractSensorThingsEntityService<DataRepository<DataEntity<?>>, DataEntity<?>> {
 
     private ObservationMapper mapper;
-    
+
     @Autowired
     private FeatureOfInterestMapper featureMapper;
 
@@ -96,12 +96,12 @@ public class ObservationService extends AbstractSensorThingsEntityService<DataRe
 
     @Autowired
     private OfferingRepository offeringRepository;
-    
+
     @Autowired
     private DatasetRepository<DatasetEntity> datasetRepository;
 
     private ObservationQuerySpecifications oQS = new ObservationQuerySpecifications();
-    
+
     private DatasetQuerySpecifications dQS = new DatasetQuerySpecifications();
 
     public ObservationService(DataRepository<DataEntity<?>> repository, ObservationMapper mapper) {
@@ -243,7 +243,7 @@ public class ObservationService extends AbstractSensorThingsEntityService<DataRe
     /**
      * Retrieves Observation Entity with Relation to sourceEntity from Database.
      * Returns empty if Observation is not found or Entities are not related.
-     * 
+     *
      * @param sourceId
      *            Id of the Source Entity
      * @param sourceEntityType
@@ -275,7 +275,7 @@ public class ObservationService extends AbstractSensorThingsEntityService<DataRe
 
     /**
      * Constructs SQL Expression to request Entity by ID.
-     * 
+     *
      * @param id
      *            id of the requested entity
      * @return BooleanExpression evaluating to true if Entity is found and valid
@@ -283,12 +283,12 @@ public class ObservationService extends AbstractSensorThingsEntityService<DataRe
     private BooleanExpression byId(Long id) {
         return oQS.isValidEntity().and(oQS.withId(id));
     }
-    
+
     @Override
     public long getCount(QueryOptions queryOptions) throws ODataApplicationException {
         return getRepository().count(getFilterPredicate(DataEntity.class, queryOptions));
     }
-    
+
     @Override
     public DataEntity<?> create(DataEntity<?> entity) throws ODataApplicationException {
         if (entity instanceof StaDataEntity) {
@@ -347,7 +347,7 @@ public class ObservationService extends AbstractSensorThingsEntityService<DataRe
     public DataEntity<?> update(DataEntity<?> entity) throws ODataApplicationException {
         return getRepository().save(entity);
     }
-    
+
     @Override
     public void delete(Long id) throws ODataApplicationException {
         if (getRepository().existsById(id)) {
@@ -433,7 +433,7 @@ public class ObservationService extends AbstractSensorThingsEntityService<DataRe
             offering.setGeometryEntity(datastream.getGeometryEntity());
         }
         offering.setObservationTypes(Sets.newHashSet(datastream.getObservationType()));
-        
+
         if (!offeringRepository.existsByIdentifier(offering.getIdentifier())) {
             return offeringRepository.save(offering);
         } else {
@@ -517,7 +517,7 @@ public class ObservationService extends AbstractSensorThingsEntityService<DataRe
         return (AbstractSensorThingsEntityService<?, AbstractFeatureEntity<?>>) getEntityService(
                 EntityTypes.FeatureOfInterest);
     }
-    
+
     private DatasetEntity getDatasetEntity(String observationType) {
         switch (observationType) {
             case OmConstants.OBS_TYPE_MEASUREMENT:
@@ -534,7 +534,7 @@ public class ObservationService extends AbstractSensorThingsEntityService<DataRe
                 return new NotInitializedDatasetEntity();
         }
     }
-    
+
     private DataEntity<?> getDataEntity(StaDataEntity observation, Dataset dataset) {
         DataEntity<?> data = null;
         switch (dataset.getObservationType().getFormat()) {

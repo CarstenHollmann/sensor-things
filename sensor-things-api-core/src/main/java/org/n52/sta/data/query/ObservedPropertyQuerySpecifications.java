@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2018 52°North Initiative for Geospatial Open Source
+ * Copyright (C) 2018-2019 52°North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -26,7 +26,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
  * Public License for more details.
  */
-
 package org.n52.sta.data.query;
 
 import org.apache.olingo.server.api.uri.queryoption.expression.BinaryOperatorKind;
@@ -60,7 +59,7 @@ public class ObservedPropertyQuerySpecifications extends EntityQuerySpecificatio
     /**
      * Assures that Entity is valid. Entity is valid if:
      *  - has associated Datastream
-     * 
+     *
      * @return BooleanExpression evaluating to true if Entity is valid
      */
     public BooleanExpression isValidEntity() {
@@ -71,7 +70,7 @@ public class ObservedPropertyQuerySpecifications extends EntityQuerySpecificatio
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.n52.sta.data.query.EntityQuerySpecifications#getIdSubqueryWithFilter(com.querydsl.core.types.dsl.
      * BooleanExpression)
@@ -83,7 +82,7 @@ public class ObservedPropertyQuerySpecifications extends EntityQuerySpecificatio
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.n52.sta.data.query.EntityQuerySpecifications#getFilterForProperty(java.lang.String,
      * java.lang.Object, org.apache.olingo.server.api.uri.queryoption.expression.BinaryOperatorKind)
      */

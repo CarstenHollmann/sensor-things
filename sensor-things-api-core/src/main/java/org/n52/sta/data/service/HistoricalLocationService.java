@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2018 52°North Initiative for Geospatial Open Source
+ * Copyright (C) 2018-2019 52°North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -67,20 +67,20 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 public class HistoricalLocationService extends AbstractSensorThingsEntityService<HistoricalLocationRepository, HistoricalLocationEntity> {
 
     private HistoricalLocationMapper mapper;
-    
+
     @Autowired
     private ThingRepository thingRepository;
-    
+
     @Autowired
     private LocationRepository locationRepository;
- 
+
     private HistoricalLocationQuerySpecifications hlQS = new HistoricalLocationQuerySpecifications();
 
     public HistoricalLocationService(HistoricalLocationRepository repository, HistoricalLocationMapper mapper) {
         super(repository);
         this.mapper = mapper;
     }
-    
+
     @Override
     public EntityTypes getType() {
         return EntityTypes.HistoricalLocation;
@@ -90,7 +90,7 @@ public class HistoricalLocationService extends AbstractSensorThingsEntityService
     public EntityCollection getEntityCollection(QueryOptions queryOptions) throws ODataApplicationException {
         EntityCollection retEntitySet = new EntityCollection();
         Predicate filter = getFilterPredicate(HistoricalLocationEntity.class, queryOptions);
-        
+
         getRepository().findAll(filter, createPageableRequest(queryOptions)).forEach(t -> retEntitySet.getEntities().add(mapper.createEntity(t)));
         return retEntitySet;
     }
@@ -105,13 +105,13 @@ public class HistoricalLocationService extends AbstractSensorThingsEntityService
     public EntityCollection getRelatedEntityCollection(Long sourceId, EdmEntityType sourceEntityType, QueryOptions queryOptions) throws ODataApplicationException {
         BooleanExpression filter = getFilter(sourceId, sourceEntityType);
         filter = filter.and(getFilterPredicate(HistoricalLocationEntity.class, queryOptions));
-        
+
         Iterable<HistoricalLocationEntity> locations = getRepository().findAll(filter, createPageableRequest(queryOptions));
         EntityCollection retEntitySet = new EntityCollection();
         locations.forEach(t -> retEntitySet.getEntities().add(mapper.createEntity(t)));
         return retEntitySet;
     }
-    
+
     @Override
     public long getRelatedEntityCollectionCount(Long sourceId, EdmEntityType sourceEntityType) {
         BooleanExpression filter = getFilter(sourceId, sourceEntityType);
@@ -195,11 +195,11 @@ public class HistoricalLocationService extends AbstractSensorThingsEntityService
             return null;
         }
     }
-    
+
     /**
      * Retrieves HistoricalLocation Entity with Relation to sourceEntity from Database.
      * Returns empty if HistoricalLocation is not found or Entities are not related.
-     * 
+     *
      * @param sourceId Id of the Source Entity
      * @param sourceEntityType Type of the Source Entity
      * @param targetId Id of the Thing to be retrieved
@@ -227,14 +227,14 @@ public class HistoricalLocationService extends AbstractSensorThingsEntityService
 
     /**
      * Constructs SQL Expression to request Entity by ID.
-     * 
+     *
      * @param id id of the requested entity
      * @return BooleanExpression evaluating to true if Entity is found and valid
      */
     private BooleanExpression byId(Long id) {
         return hlQS.withId(id);
     }
-    
+
     @Override
     public long getCount(QueryOptions queryOptions) throws ODataApplicationException {
         return getRepository().count(getFilterPredicate(HistoricalLocationEntity.class, queryOptions));
@@ -294,7 +294,7 @@ public class HistoricalLocationService extends AbstractSensorThingsEntityService
         throw new ODataApplicationException("Invalid http method for updating entity!",
                 HttpStatusCode.BAD_REQUEST.getStatusCode(), Locale.getDefault());
     }
-    
+
     @Override
     public HistoricalLocationEntity update(HistoricalLocationEntity entity) throws ODataApplicationException {
         return getRepository().save(entity);
@@ -339,11 +339,11 @@ public class HistoricalLocationService extends AbstractSensorThingsEntityService
     private void updateThing(HistoricalLocationEntity historicalLocation) throws ODataApplicationException {
         getThingService().update(historicalLocation.getThingEntity().setHistoricalLocationEntities(null));
     }
-    
+
     private AbstractSensorThingsEntityService<?, ThingEntity> getThingService() {
         return (AbstractSensorThingsEntityService<?, ThingEntity>) getEntityService(EntityTypes.Thing);
     }
-    
+
     private AbstractSensorThingsEntityService<?, LocationEntity> getLocationService() {
         return (AbstractSensorThingsEntityService<?, LocationEntity>) getEntityService(EntityTypes.Location);
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2019 52°North Initiative for Geospatial Open Source
+ * Copyright (C) 2018-2019 52°North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -52,6 +52,7 @@ import org.springframework.stereotype.Component;
 
 import io.moquette.broker.Server;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.mqtt.MqttFixedHeader;
 import io.netty.handler.codec.mqtt.MqttMessageType;
 import io.netty.handler.codec.mqtt.MqttPublishMessage;
@@ -118,8 +119,8 @@ public class MqttEventHandler implements STAEventHandler, InitializingBean {
                         serializedEntity = encodeEntity(subscrip, entity);
                     }
                     MqttPublishMessage msg = new MqttPublishMessage(mqttFixedHeader,
-                            new MqttPublishVariableHeader(topic, 52),
-                            serializedEntity);
+                                                                    new MqttPublishVariableHeader(topic, 52),
+                                                                    serializedEntity);
                     mqttBroker.internalPublish(msg, internalClientId);
                     LOGGER.debug("Posted Message to Topic: " + topic);
                 } catch (IOException | SerializerException ex) {
@@ -154,7 +155,12 @@ public class MqttEventHandler implements STAEventHandler, InitializingBean {
     }
 
     private ByteBuf encodeEntity(AbstractMqttSubscription subsc, Entity entity) throws IOException, SerializerException {
-        return serializer.encodeEntity(edm, entity, subsc.getEdmEntityType(), subsc.getEdmEntitySet(), subsc.getQueryOptions(), watchedEntityTypes);
+        return Unpooled.copiedBuffer(serializer.encodeEntity(edm,
+                                                             entity,
+                                                             subsc.getEdmEntityType(),
+                                                             subsc.getEdmEntitySet(),
+                                                             subsc.getQueryOptions(),
+                                                             watchedEntityTypes));
     }
 
     @Override

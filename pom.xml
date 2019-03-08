@@ -1,4 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2018-2019 52°North Initiative for Geospatial Open Source
+    Software GmbH
+
+    This program is free software; you can redistribute it and/or modify it
+    under the terms of the GNU General Public License version 2 as published
+    by the Free Software Foundation.
+
+    If the program is linked with libraries which are licensed under one of
+    the following licenses, the combination of the program with the linked
+    library is not considered a "derivative work" of the program:
+
+        - Apache License, version 2.0
+        - Apache Software License, version 1.0
+        - GNU Lesser General Public License, version 3
+        - Mozilla Public License, versions 1.0, 1.1 and 2.0
+        - Common Development and Distribution License (CDDL), version 1.0
+
+    Therefore the distribution of the program linked with libraries licensed
+    under the aforementioned licenses, is permitted by the copyright holders
+    if the distribution is compliant with both the GNU General Public
+    License version 2 and the aforementioned licenses.
+
+    This program is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+    Public License for more details.
+
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -11,12 +41,19 @@
 
     <name>52°North Sensor Things API</name>
     <description>52°North implementation of the OGC Sensor Things API</description>
+    <inceptionYear>2018</inceptionYear>
+    <url>https://github.com/52North/sensor-things</url>
 
+    <parent>
+        <groupId>org.n52</groupId>
+        <artifactId>parent</artifactId>
+        <version>14</version>
+    </parent>
 
     <modules>
         <module>sensor-things-api-core</module>
         <module>sensor-things-api-app</module>
-        <module>sensor-things-api-webapp</module>
+        <!-- <module>sensor-things-api-webapp</module> -->
         <module>sensor-things-api-http</module>
         <module>sensor-things-api-mqtt</module>
     </modules>
@@ -27,12 +64,17 @@
         <java.version>1.8</java.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <odata.version>4.6.0-STA-SNAPSHOT</odata.version>
+
         <series-hbm.version>2-SNAPSHOT</series-hbm.version>
-        <arctic-sea.version>5.1.0-SNAPSHOT</arctic-sea.version>
+        <arctic-sea.version>5.2.0</arctic-sea.version>
+
+        <odata.version>4.6.0-STA-SNAPSHOT</odata.version>
         <spring-boot.version>2.0.3.RELEASE</spring-boot.version>
         <querydsl.version>4.1.4</querydsl.version>
         <geolatte-geom.version>1.3.0</geolatte-geom.version>
+        <jts-core.version>1.14.0</jts-core.version>
+        <guava.version>18.0</guava.version>
+        <h2database.version>1.4.196</h2database.version>
     </properties>
 
     <dependencyManagement>
@@ -63,11 +105,6 @@
             </dependency>
 
             <!-- Data Access -->
-            <!-- <dependency> -->
-            <!-- <groupId>org.n52.series-api.db</groupId> -->
-            <!-- <artifactId>dao</artifactId> -->
-            <!-- <version>3.0.0-SNAPSHOT</version> -->
-            <!-- </dependency> -->
             <dependency>
                 <groupId>org.n52.series.db</groupId>
                 <artifactId>entities</artifactId>
@@ -114,6 +151,7 @@
             <dependency>
                 <groupId>org.hamcrest</groupId>
                 <artifactId>hamcrest-core</artifactId>
+                <version>1.3</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -131,16 +169,168 @@
                 <artifactId>querydsl-spatial</artifactId>
                 <version>${querydsl.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.vividsolutions</groupId>
+                <artifactId>jts-core</artifactId>
+                <version>${jts-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2-mvstore</artifactId>
+                <version>${h2database.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
     <build>
+        <defaultGoal>install</defaultGoal>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.gmaven</groupId>
+                <artifactId>groovy-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                        <configuration>
+                            <source>project.properties['currentYear'] = java.time.Year.now().toString()</source>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>analyze-dependencies</id>
+                        <goals>
+                            <goal>analyze-only</goal>
+                        </goals>
+                        <configuration>
+                            <ignoredDependencies>
+                                <ignoredDependency>io.netty:netty-buffer</ignoredDependency>
+                                <ignoredDependency>io.netty:netty-all</ignoredDependency>
+                                <ignoredDependency>io.netty:netty-codec-mqtt</ignoredDependency>
+                                <ignoredDependency>org.springframework.boot:spring-boot-starter</ignoredDependency>
+                            </ignoredDependencies>
+                            <ignoredUnusedDeclaredDependencies>
+                                <ignoredUnusedDeclaredDependency>org.springframework.boot:spring-boot-starter-web</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>org.springframework.boot:spring-boot-starter-data-jpa</ignoredUnusedDeclaredDependency>
+
+                                <ignoredUnusedDeclaredDependency>org.hibernate:hibernate-spatial</ignoredUnusedDeclaredDependency>
+
+                                <ignoredUnusedDeclaredDependency>org.n52.series.db:mappings</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>org.n52.sta:sensor-things-api-http</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>org.n52.sta:sensor-things-api-mqtt</ignoredUnusedDeclaredDependency>
+                                <ignoredUnusedDeclaredDependency>org.n52.sta:sensor-things-api-core</ignoredUnusedDeclaredDependency>
+                            </ignoredUnusedDeclaredDependencies>
+
+                            <ignoredUsedUndeclaredDependencies>
+                                <ignoredUsedUndeclaredDependency>javax.annotation:javax.annotation-api</ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>org.apache.tomcat.embed:tomcat-embed-core</ignoredUsedUndeclaredDependency>
+                            </ignoredUsedUndeclaredDependencies>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>download-sources</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>resolve</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>sources</classifier>
+                            <excludeReactor>true</excludeReactor>
+                            <silent>true</silent>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>download-javadoc</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>resolve</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>javadoc</classifier>
+                            <excludeReactor>true</excludeReactor>
+                            <silent>true</silent>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <inherited>false</inherited>
+                <configuration>
+                    <aggregate>true</aggregate>
+                    <header>etc/52N_GPLv2_License.txt</header>
+                    <includes>
+                        <include>**/*.java</include>
+                        <include>**/*.xml</include>
+                    </includes>
+                    <strictCheck>true</strictCheck>
+                    <properties>
+                        <year>${project.inceptionYear}-${currentYear}</year>
+                    </properties>
+                    <mapping>
+                        <java>SLASHSTAR_STYLE</java>
+                    </mapping>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>format-license-headers</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>format</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <configuration>
+                    <rules>
+                        <requireNoRepositories>
+                            <allowedRepositories>
+                                <id>bintray</id>
+                                <id>n52-releases</id>
+                            </allowedRepositories>
+                        </requireNoRepositories>
+                    </rules>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
+
+    <repositories>
+        <repository>
+            <id>bintray</id>
+            <url>https://jcenter.bintray.com</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>n52-releases</id>
+            <name>52n Releases</name>
+            <url>http://52north.org/maven/repo/releases/</url>
+        </repository>
+    </repositories>
 </project>
