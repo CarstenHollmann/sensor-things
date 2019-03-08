@@ -132,7 +132,7 @@ public class ThingMapper extends AbstractMapper<ThingEntity> {
             Set<LocationEntity> locations = new LinkedHashSet<>();
             Iterator<Entity> iterator = entity.getNavigationLink(ES_LOCATIONS_NAME).getInlineEntitySet().iterator();
             while (iterator.hasNext()) {
-                locations.add(locationMapper.createEntity((Entity) iterator.next()));
+                locations.add(locationMapper.createEntity(iterator.next()));
             }
             thing.setLocationEntities(locations);
         }
@@ -143,7 +143,7 @@ public class ThingMapper extends AbstractMapper<ThingEntity> {
             Set<DatastreamEntity> datastreams = new LinkedHashSet<>();
             Iterator<Entity> iterator = entity.getNavigationLink(ES_DATASTREAMS_NAME).getInlineEntitySet().iterator();
             while (iterator.hasNext()) {
-                datastreams.add(datastreamMapper.createEntity((Entity) iterator.next()));
+                datastreams.add(datastreamMapper.createEntity(iterator.next()));
             }
             thing.setDatastreamEntities(datastreams);
         }
@@ -172,13 +172,13 @@ public class ThingMapper extends AbstractMapper<ThingEntity> {
         if (checkNavigationLink(entity, ES_LOCATIONS_NAME)) {
             Iterator<Entity> iterator = entity.getNavigationLink(ES_LOCATIONS_NAME).getInlineEntitySet().iterator();
             while (iterator.hasNext()) {
-                locationMapper.checkNavigationLink((Entity) iterator.next());
+                locationMapper.checkNavigationLink(iterator.next());
             }
         }
         if (checkNavigationLink(entity, ES_DATASTREAMS_NAME)) {
             Iterator<Entity> iterator = entity.getNavigationLink(ES_DATASTREAMS_NAME).getInlineEntitySet().iterator();
             while (iterator.hasNext()) {
-                datastreamMapper.checkNavigationLink((Entity) iterator.next());
+                datastreamMapper.checkNavigationLink(iterator.next());
             }
         }
         return entity;
@@ -197,21 +197,21 @@ public class ThingMapper extends AbstractMapper<ThingEntity> {
             entity.getLocationEntities().forEach((en)-> {
                 set.add(en.getId());
             });
-            collections.put(ET_LOCATION_NAME, new HashSet(set));
+            collections.put(ET_LOCATION_NAME, new HashSet<Long>(set));
         } catch(NullPointerException e) {}
         set.clear();
         try {
             entity.getHistoricalLocationEntities().forEach((en) -> {
                 set.add(en.getId());
             });
-            collections.put(ET_HISTORICAL_LOCATION_NAME,  new HashSet(set));
+            collections.put(ET_HISTORICAL_LOCATION_NAME,  new HashSet<Long>(set));
         } catch(NullPointerException e) {}
         set.clear();
         try {
             entity.getDatastreamEntities().forEach((en) -> {
                 set.add(en.getId());
             });
-            collections.put(ET_DATASTREAM_NAME,  new HashSet(set));
+            collections.put(ET_DATASTREAM_NAME,  new HashSet<Long>(set));
         } catch(NullPointerException e) {}
         return collections;
     }

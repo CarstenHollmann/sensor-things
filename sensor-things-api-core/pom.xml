@@ -50,6 +50,7 @@
         <dependency>
             <groupId>org.n52.series.db</groupId>
             <artifactId>mappings</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.n52.series.db</groupId>
@@ -96,6 +97,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-spatial</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -148,6 +150,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <scope>runtime</scope>
         </dependency>
 
         <!-- Miscellaneous -->

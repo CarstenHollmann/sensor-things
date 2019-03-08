@@ -130,7 +130,7 @@ public class ObservationMapper extends AbstractMapper<DataEntity<?>> {
         return entity;
     }
 
-    private String getResult(DataEntity o) {
+    private String getResult(DataEntity< ? > o) {
         if (o instanceof QuantityDataEntity) {
             if ((((QuantityDataEntity) o).getValue().doubleValue() - ((QuantityDataEntity) o).getValue().intValue()) == 0.0) {
                 return Integer.toString(((QuantityDataEntity) o).getValue().intValue());

@@ -76,6 +76,7 @@ public class LocationQuerySpecifications extends EntityQuerySpecifications<Locat
      * @see org.n52.sta.data.query.EntityQuerySpecifications#getFilterForProperty(java.lang.String,
      * java.lang.Object, org.apache.olingo.server.api.uri.queryoption.expression.BinaryOperatorKind)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public Object getFilterForProperty(String propertyName,
                                        Object propertyValue,

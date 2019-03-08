@@ -204,7 +204,7 @@ public abstract class AbstractMapper<T> {
             Set<DatastreamEntity> ds = new LinkedHashSet<>();
             Iterator<Entity> iterator = entity.getNavigationLink(ES_DATASTREAMS_NAME).getInlineEntitySet().iterator();
             while (iterator.hasNext()) {
-                ds.add(datastreamMapper.createEntity((Entity) iterator.next()));
+                ds.add(datastreamMapper.createEntity(iterator.next()));
             }
             datastreams.setDatastreams(ds);
         }

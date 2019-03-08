@@ -96,6 +96,7 @@ public class DatastreamQuerySpecifications extends EntityQuerySpecifications<Dat
         return this.toSubquery(qdatastream, qdatastream.id, filter);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Object getFilterForProperty(String propertyName,
                                        Object propertyValue,

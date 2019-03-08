@@ -78,6 +78,7 @@ public class ObservationEntityCrudRequestHandler extends AbstractEntityCrudReque
         return mapper;
     }
 
+    @SuppressWarnings("unchecked")
     private AbstractSensorThingsEntityService<?, DataEntity<?>> getEntityService() {
         return (AbstractSensorThingsEntityService<?, DataEntity<?>>) getEntityService(EntityTypes.Observation);
     }

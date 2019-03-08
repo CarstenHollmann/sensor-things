@@ -74,6 +74,7 @@ public class DatastreamEntityCrudRequestHandler extends AbstractEntityCrudReques
         return mapper;
     }
 
+    @SuppressWarnings("unchecked")
     private AbstractSensorThingsEntityService<?, DatastreamEntity> getEntityService() {
         return (AbstractSensorThingsEntityService<?, DatastreamEntity>) getEntityService(EntityTypes.Datastream);
     }

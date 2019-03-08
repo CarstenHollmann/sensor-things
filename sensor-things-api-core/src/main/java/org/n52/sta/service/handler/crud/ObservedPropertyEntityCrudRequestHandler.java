@@ -74,6 +74,7 @@ public class ObservedPropertyEntityCrudRequestHandler extends AbstractEntityCrud
         return mapper;
     }
 
+    @SuppressWarnings("unchecked")
     private AbstractSensorThingsEntityService<?, ObservablePropertyEntity> getEntityService() {
         return (AbstractSensorThingsEntityService<?, ObservablePropertyEntity>) getEntityService(EntityTypes.ObservedProperty);
     }

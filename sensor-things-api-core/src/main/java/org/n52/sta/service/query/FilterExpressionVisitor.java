@@ -92,15 +92,15 @@ import com.querydsl.spatial.SpatialOps;
  */
 public class FilterExpressionVisitor implements ExpressionVisitor<Object> {
 
-    private Class sourceType;
+    private Class< ? > sourceType;
 
     private String sourcePath;
 
     private EntityQuerySpecifications< ? > rootQS;
 
-    private AbstractSensorThingsEntityService service;
+    private AbstractSensorThingsEntityService< ? , ? > service;
 
-    public FilterExpressionVisitor(Class sourceType, AbstractSensorThingsEntityService service)
+    public FilterExpressionVisitor(Class< ? > sourceType, AbstractSensorThingsEntityService< ? , ? > service)
             throws ODataApplicationException {
         this.sourceType = sourceType;
         this.service = service;
@@ -165,7 +165,7 @@ public class FilterExpressionVisitor implements ExpressionVisitor<Object> {
             return -(Double) operand;
         } else if (operator == UnaryOperatorKind.MINUS && operand instanceof NumberExpression) {
             // 2.) arithmetic minus
-            return ((NumberExpression) operand).negate();
+            return ((NumberExpression< ? >) operand).negate();
         }
 
         // Operation not processed, throw an exception
@@ -243,9 +243,9 @@ public class FilterExpressionVisitor implements ExpressionVisitor<Object> {
                                                             HttpStatusCode.BAD_REQUEST.getStatusCode(),
                                                             Locale.ENGLISH);
                     } else if (left instanceof List< ? >) {
-                        return convertToForeignExpression((List<UriResource>) left, right, operator);
+                        return convertToForeignExpression(left, right, operator);
                     } else {
-                        return convertToForeignExpression((List<UriResource>) right, left, operator);
+                        return convertToForeignExpression(right, left, operator);
                     }
 
                 }
@@ -306,6 +306,7 @@ public class FilterExpressionVisitor implements ExpressionVisitor<Object> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private DateTimeExpression<Date> convertToDateTimeExpression(Object expr) throws ODataApplicationException {
         if (expr instanceof DateTimeExpression< ? >) {
             // Literal
@@ -323,6 +324,7 @@ public class FilterExpressionVisitor implements ExpressionVisitor<Object> {
     }
 
     private DateTimeExpression<Date>[] convertToTimespanExpression(Object expr) throws ODataApplicationException {
+        @SuppressWarnings("unchecked")
         DateTimeExpression<Date>[] result = new DateTimeExpression[2];
 
         if (expr instanceof Date[]) {
@@ -342,7 +344,7 @@ public class FilterExpressionVisitor implements ExpressionVisitor<Object> {
      * properties. Returned Expression evaluates to true if Entity should be included. TODO: Expand to support
      * deeper nested properties
      *
-     * @param uriResources
+     * @param resources
      *        Path to foreign property
      * @param value
      *        supposed value of foreign property
@@ -354,17 +356,19 @@ public class FilterExpressionVisitor implements ExpressionVisitor<Object> {
      * @throws ODataApplicationException
      *         If no QuerySpecification for given related Entity was found.
      */
-    private BooleanExpression convertToForeignExpression(List<UriResource> uriResources,
+    private BooleanExpression convertToForeignExpression(Object resources,
                                                          Object value,
                                                          BinaryOperatorKind operator)
                                                                  throws ExpressionVisitException,
                                                                  ODataApplicationException {
         JPQLQuery<Long> idQuery = null;
+        @SuppressWarnings("unchecked")
+        List<UriResource> uriResources = (List<UriResource>) resources;
         int uriLength = uriResources.size();
         String lastResource = uriResources.get(uriLength-2).toString();
 
         // Get filter on Entity
-        EntityQuerySpecifications stepQS = QuerySpecificationRepository.getSpecification(lastResource);
+        EntityQuerySpecifications< ? > stepQS = QuerySpecificationRepository.getSpecification(lastResource);
         Object filter = stepQS.getFilterForProperty(uriResources.get(uriLength-1).toString(), value, operator, false);
         idQuery = stepQS.getIdSubqueryWithFilter((com.querydsl.core.types.Expression<Boolean>)filter);
 

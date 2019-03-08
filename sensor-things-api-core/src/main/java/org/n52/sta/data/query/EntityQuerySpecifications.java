@@ -223,9 +223,9 @@ public abstract class EntityQuerySpecifications<T> {
         case LT:
             return leftExpr.lt(rightExpr);
         case EQ:
-            return ((ComparableExpressionBase) leftExpr).eq(rightExpr);
+            return leftExpr.goe(rightExpr).and(leftExpr.loe(rightExpr));
         case NE:
-            return ((ComparableExpressionBase) leftExpr).ne(rightExpr);
+            return leftExpr.goe(rightExpr).and(leftExpr.loe(rightExpr)).not();
         case ADD:
             return leftExpr.add(rightExpr);
         case DIV:

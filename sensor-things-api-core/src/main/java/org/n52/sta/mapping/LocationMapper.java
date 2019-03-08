@@ -121,7 +121,7 @@ public class LocationMapper extends AbstractLocationGeometryMapper<LocationEntit
             Set<ThingEntity> things = new LinkedHashSet<>();
             Iterator<Entity> iterator = entity.getNavigationLink(ES_THINGS_NAME).getInlineEntitySet().iterator();
             while (iterator.hasNext()) {
-                things.add(thingMapper.createEntity((Entity) iterator.next()));
+                things.add(thingMapper.createEntity(iterator.next()));
             }
             location.setThingEntities(things);
         }
@@ -135,7 +135,7 @@ public class LocationMapper extends AbstractLocationGeometryMapper<LocationEntit
         if (checkNavigationLink(entity, ES_THINGS_NAME)) {
             Iterator<Entity> iterator = entity.getNavigationLink(ES_THINGS_NAME).getInlineEntitySet().iterator();
             while (iterator.hasNext()) {
-                thingMapper.checkNavigationLink((Entity) iterator.next());
+                thingMapper.checkNavigationLink(iterator.next());
             }
         }
         return entity;
@@ -153,14 +153,14 @@ public class LocationMapper extends AbstractLocationGeometryMapper<LocationEntit
             entity.getThingEntities().forEach((en)-> {
                 set.add(en.getId());
             });
-            collections.put(ET_THING_NAME, new HashSet(set));
+            collections.put(ET_THING_NAME, new HashSet<Long>(set));
         } catch(NullPointerException e) {}
         set.clear();
         try {
             entity.getHistoricalLocationEntities().forEach((en) -> {
                 set.add(en.getId());
             });
-            collections.put(ET_HISTORICAL_LOCATION_NAME, new HashSet(set));
+            collections.put(ET_HISTORICAL_LOCATION_NAME, new HashSet<Long>(set));
         } catch(NullPointerException e) {}
         return collections;
     }

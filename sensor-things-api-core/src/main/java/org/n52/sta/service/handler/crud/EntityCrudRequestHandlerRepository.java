@@ -84,7 +84,7 @@ public class EntityCrudRequestHandlerRepository {
                 message + featureOfInterestEntityCrudRequestHandler.getClass().getName());
     }
 
-    public AbstractEntityCrudRequestHandler getEntityCrudRequestHandler(String type) {
+    public AbstractEntityCrudRequestHandler< ? > getEntityCrudRequestHandler(String type) {
 
         switch (type) {
         case "Thing": {
@@ -110,9 +110,6 @@ public class EntityCrudRequestHandlerRepository {
         }
         case "FeatureOfInterest": {
             return featureOfInterestEntityCrudRequestHandler;
-        }
-        default: {
-            // TODO: check if we need to do error handling for invalid endpoints
         }
         }
         return null;

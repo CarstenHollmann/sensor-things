@@ -187,7 +187,7 @@ public class SensorMapper extends AbstractMapper<ProcedureEntity> {
             entity.getDatastreams().forEach((en) -> {
                 set.add(en.getId());
             });
-            collections.put(ET_DATASTREAM_NAME, new HashSet(set));
+            collections.put(ET_DATASTREAM_NAME, new HashSet<Long>(set));
         } catch (NullPointerException e) {}
         return collections;
     }

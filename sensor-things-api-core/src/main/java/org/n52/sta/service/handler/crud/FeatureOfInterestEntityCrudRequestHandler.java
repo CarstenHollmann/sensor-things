@@ -73,6 +73,7 @@ public class FeatureOfInterestEntityCrudRequestHandler extends AbstractEntityCru
         return mapper;
     }
 
+    @SuppressWarnings("unchecked")
     private AbstractSensorThingsEntityService<?, AbstractFeatureEntity<?>> getEntityService() {
         return (AbstractSensorThingsEntityService<?, AbstractFeatureEntity<?>>) getEntityService(EntityTypes.FeatureOfInterest);
     }

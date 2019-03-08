@@ -187,7 +187,7 @@ public class DatastreamMapper extends AbstractLocationGeometryMapper<DatastreamE
         if (checkNavigationLink(entity, ES_OBSERVATIONS_NAME)) {
             Iterator<Entity> iterator = entity.getNavigationLink(ES_OBSERVATIONS_NAME).getInlineEntitySet().iterator();
             while (iterator.hasNext()) {
-                observationMapper.checkNavigationLink((Entity) iterator.next());
+                observationMapper.checkNavigationLink(iterator.next());
             }
         }
         return entity;
@@ -299,7 +299,7 @@ public class DatastreamMapper extends AbstractLocationGeometryMapper<DatastreamE
             Set<StaDataEntity> observations = new LinkedHashSet<>();
             Iterator<Entity> iterator = entity.getNavigationLink(ES_OBSERVATIONS_NAME).getInlineEntitySet().iterator();
             while (iterator.hasNext()) {
-                StaDataEntity createObservation = observationMapper.createEntity((Entity) iterator.next());
+                StaDataEntity createObservation = observationMapper.createEntity(iterator.next());
                 createObservation.setDatastream(datastream);
                 observations.add(createObservation);
             }

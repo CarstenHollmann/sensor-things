@@ -73,6 +73,7 @@ public class HistoricalLocationEntityCrudRequestHandler extends AbstractEntityCr
         return mapper;
     }
 
+    @SuppressWarnings("unchecked")
     private AbstractSensorThingsEntityService<?, HistoricalLocationEntity> getEntityService() {
         return (AbstractSensorThingsEntityService<?, HistoricalLocationEntity>) getEntityService(EntityTypes.HistoricalLocation);
     }

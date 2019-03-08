@@ -226,17 +226,6 @@
                                 <ignoredDependency>io.netty:netty-codec-mqtt</ignoredDependency>
                                 <ignoredDependency>org.springframework.boot:spring-boot-starter</ignoredDependency>
                             </ignoredDependencies>
-                            <ignoredUnusedDeclaredDependencies>
-                                <ignoredUnusedDeclaredDependency>org.springframework.boot:spring-boot-starter-web</ignoredUnusedDeclaredDependency>
-                                <ignoredUnusedDeclaredDependency>org.springframework.boot:spring-boot-starter-data-jpa</ignoredUnusedDeclaredDependency>
-
-                                <ignoredUnusedDeclaredDependency>org.hibernate:hibernate-spatial</ignoredUnusedDeclaredDependency>
-
-                                <ignoredUnusedDeclaredDependency>org.n52.series.db:mappings</ignoredUnusedDeclaredDependency>
-                                <ignoredUnusedDeclaredDependency>org.n52.sta:sensor-things-api-http</ignoredUnusedDeclaredDependency>
-                                <ignoredUnusedDeclaredDependency>org.n52.sta:sensor-things-api-mqtt</ignoredUnusedDeclaredDependency>
-                                <ignoredUnusedDeclaredDependency>org.n52.sta:sensor-things-api-core</ignoredUnusedDeclaredDependency>
-                            </ignoredUnusedDeclaredDependencies>
 
                             <ignoredUsedUndeclaredDependencies>
                                 <ignoredUsedUndeclaredDependency>javax.annotation:javax.annotation-api</ignoredUsedUndeclaredDependency>

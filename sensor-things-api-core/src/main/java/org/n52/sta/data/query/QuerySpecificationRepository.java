@@ -39,7 +39,7 @@ import org.apache.olingo.server.api.ODataApplicationException;
  */
 public class QuerySpecificationRepository {
 
-    public static EntityQuerySpecifications getSpecification(String name) throws ODataApplicationException {
+    public static EntityQuerySpecifications< ? > getSpecification(String name) throws ODataApplicationException {
         switch (name) {
         case "ThingEntity":
         case "Thing":
