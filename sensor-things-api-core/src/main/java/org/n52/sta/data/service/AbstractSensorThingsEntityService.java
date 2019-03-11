@@ -87,6 +87,17 @@ public abstract class AbstractSensorThingsEntityService<T extends JpaRepository<
 
     @Autowired
     private EntityServiceRepository serviceRepository;
+    
+    protected final String IOT_DATASTREAM = "iot.Datastream";
+    protected final String IOT_LOCATION = "iot.Location";
+    protected final String IOT_THING = "iot.Thing";
+    protected final String IOT_HISTORICALLOCATION = "iot.HistoricalLocation";
+    protected final String IOT_SENSOR = "iot.Sensor";
+    protected final String IOT_FEATURE = "iot.FeatureOfInterest";
+    protected final String IOT_OBSERVATION = "iot.Observation";
+    protected final String IOT_OBSERVEDPROPERTY = "iot.ObservedProperty";
+    
+    protected final String ENTITY_NOT_FOUND = "Entity not found!";
 
     private T repository;
 

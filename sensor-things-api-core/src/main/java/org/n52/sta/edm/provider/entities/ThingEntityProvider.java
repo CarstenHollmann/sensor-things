@@ -57,6 +57,7 @@ import org.springframework.stereotype.Component;
  * @author <a href="mailto:s.drost@52north.org">Sebastian Drost</a>
  */
 @Component
+@SuppressWarnings("checkstyle:avoidstaticimport")
 public class ThingEntityProvider extends AbstractSensorThingsEntityProvider {
 
     // Entity Type Name
@@ -94,8 +95,10 @@ public class ThingEntityProvider extends AbstractSensorThingsEntityProvider {
         entitySet.setType(ET_THING_FQN);
 
         CsdlNavigationPropertyBinding navPropLocationBinding = new CsdlNavigationPropertyBinding();
-        navPropLocationBinding.setPath(ES_LOCATIONS_NAME); // the path from entity type to navigation property
-        navPropLocationBinding.setTarget(ES_LOCATIONS_NAME); //target entitySet, where the nav prop points to
+        // the path from entity type to navigation property
+        navPropLocationBinding.setPath(ES_LOCATIONS_NAME);
+        //target entitySet, where the nav prop points to
+        navPropLocationBinding.setTarget(ES_LOCATIONS_NAME);
 
         CsdlNavigationPropertyBinding navPropDatastreamBinding = new CsdlNavigationPropertyBinding();
         navPropDatastreamBinding.setPath(ES_DATASTREAMS_NAME);
@@ -106,7 +109,9 @@ public class ThingEntityProvider extends AbstractSensorThingsEntityProvider {
         navPropHistoricalLocationBinding.setTarget(ES_HISTORICAL_LOCATIONS_NAME);
 
         List<CsdlNavigationPropertyBinding> navPropBindingList = new ArrayList<CsdlNavigationPropertyBinding>();
-        navPropBindingList.addAll(Arrays.asList(navPropLocationBinding, navPropDatastreamBinding, navPropHistoricalLocationBinding));
+        navPropBindingList.addAll(Arrays.asList(navPropLocationBinding,
+                                                navPropDatastreamBinding,
+                                                navPropHistoricalLocationBinding));
         entitySet.setNavigationPropertyBindings(navPropBindingList);
 
         return entitySet;
@@ -160,14 +165,6 @@ public class ThingEntityProvider extends AbstractSensorThingsEntityProvider {
 
         return Arrays.asList(navPropLocations, navPropDatastreams, navPropHistoricalLocations);
     }
-
-//    public List<CsdlAnnotation> createCsdlAnnotations() {
-//        CsdlAnnotation annotation = new CsdlAnnotation()
-//                .setTerm("iot.test")
-//                .setQualifier("@iot")
-//                .setExpression(new CsdlConstantExpression(CsdlConstantExpression.ConstantExpressionType.String, "testContent"));
-//        return Arrays.asList(annotation);
-//    }
 
     @Override
     public FullQualifiedName getFullQualifiedTypeName() {

@@ -61,7 +61,7 @@ public class DaoConfig {
     private String persistenceXmlLocation;
 
     @Autowired
-    Interceptor mqttInterceptor;
+    private Interceptor mqttInterceptor;
 
     @Bean
     public EntityManagerFactory entityManagerFactory(DataSource datasource, JpaProperties properties)
@@ -83,7 +83,8 @@ public class DaoConfig {
     }
 
     private TypeContributorList createTypeContributorsList() {
-        return (TypeContributorList) () -> Arrays.asList(toTypeContributor(SmallBooleanType.INSTANCE, "small_boolean"));
+        return (TypeContributorList) () ->
+        Arrays.asList(toTypeContributor(SmallBooleanType.INSTANCE, "small_boolean"));
     }
 
     private <T extends BasicType> TypeContributor toTypeContributor(T type, String... keys) {

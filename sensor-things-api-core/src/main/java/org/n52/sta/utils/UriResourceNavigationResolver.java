@@ -63,7 +63,9 @@ public class UriResourceNavigationResolver {
 
     @Autowired
     private EntityServiceRepository serviceRepository;
-
+    
+    private final String ENTITY_NOT_FOUND = "Entity not found.";
+    
     /**
      * Resolves the root URI resource as UriResourceEntitySet
      *
@@ -75,7 +77,7 @@ public class UriResourceNavigationResolver {
 
         if (!(uriResource instanceof UriResourceEntitySet)) {
             throw new ODataApplicationException("Only EntitySet is supported",
-                    HttpStatusCode.NOT_IMPLEMENTED.getStatusCode(), Locale.ROOT);
+                                                HttpStatusCode.NOT_IMPLEMENTED.getStatusCode(), Locale.ROOT);
         }
 
         UriResourceEntitySet uriResourceEntitySet = (UriResourceEntitySet) uriResource;
@@ -89,7 +91,8 @@ public class UriResourceNavigationResolver {
      * @return the target EntityQueryParams
      * @throws ODataApplicationException if a entity from the navigation path does not exist
      */
-    public EntityQueryParams resolveUriResourceNavigationPaths(List<UriResource> navigationResourcePaths) throws ODataApplicationException {
+    public EntityQueryParams resolveUriResourceNavigationPaths(List<UriResource> navigationResourcePaths)
+            throws ODataApplicationException {
         UriResourceEntitySet uriResourceEntitySet = resolveRootUriResource(navigationResourcePaths.get(0));
         EdmEntitySet targetEntitySet = uriResourceEntitySet.getEntitySet();
 
@@ -101,8 +104,8 @@ public class UriResourceNavigationResolver {
                 .existsEntity(sourceEntityId);
 
         if (!entityExists) {
-            throw new ODataApplicationException("Entity not found.",
-                    HttpStatusCode.NOT_FOUND.getStatusCode(), Locale.ROOT);
+            throw new ODataApplicationException(ENTITY_NOT_FOUND,
+                                                HttpStatusCode.NOT_FOUND.getStatusCode(), Locale.ROOT);
         }
 
         EdmEntityType targetEntityType = null;
@@ -123,14 +126,16 @@ public class UriResourceNavigationResolver {
 
                     targetIdOpt = serviceRepository.getEntityService(targetEntityType.getName())
                             .getIdForRelatedEntity(sourceEntityId, sourceEntityType);
-                } else { // e.g. /Things(1)/Locations(1)
-
+                } else {
+                    // e.g. /Things(1)/Locations(1)
                     targetIdOpt = serviceRepository.getEntityService(targetEntityType.getName())
-                            .getIdForRelatedEntity(sourceEntityId, sourceEntityType, getEntityIdFromKeyParams(navKeyPredicates));
+                            .getIdForRelatedEntity(sourceEntityId,
+                                                   sourceEntityType,
+                                                   getEntityIdFromKeyParams(navKeyPredicates));
                 }
                 if (!targetIdOpt.isPresent()) {
-                    throw new ODataApplicationException("Entity not found.",
-                            HttpStatusCode.NOT_FOUND.getStatusCode(), Locale.ROOT);
+                    throw new ODataApplicationException(ENTITY_NOT_FOUND,
+                                                        HttpStatusCode.NOT_FOUND.getStatusCode(), Locale.ROOT);
                 }
 
                 sourceEntityType = targetEntityType;
@@ -162,23 +167,23 @@ public class UriResourceNavigationResolver {
      * @throws ODataApplicationException if the target entity set is not supported
      */
     public static EdmEntitySet getNavigationTargetEntitySet(EdmEntitySet startEdmEntitySet,
-            EdmNavigationProperty edmNavigationProperty)
-            throws ODataApplicationException {
-
+                                                            EdmNavigationProperty edmNavigationProperty)
+                                                                    throws ODataApplicationException {
+        final String NOT_SUPPORTED = "Not supported.";
         EdmEntitySet navigationTargetEntitySet = null;
 
         String navPropName = edmNavigationProperty.getName();
         EdmBindingTarget edmBindingTarget = startEdmEntitySet.getRelatedBindingTarget(navPropName);
         if (edmBindingTarget == null) {
-            throw new ODataApplicationException("Not supported.",
-                    HttpStatusCode.NOT_IMPLEMENTED.getStatusCode(), Locale.ROOT);
+            throw new ODataApplicationException(NOT_SUPPORTED,
+                                                HttpStatusCode.NOT_IMPLEMENTED.getStatusCode(), Locale.ROOT);
         }
 
         if (edmBindingTarget instanceof EdmEntitySet) {
             navigationTargetEntitySet = (EdmEntitySet) edmBindingTarget;
         } else {
-            throw new ODataApplicationException("Not supported.",
-                    HttpStatusCode.NOT_IMPLEMENTED.getStatusCode(), Locale.ROOT);
+            throw new ODataApplicationException(NOT_SUPPORTED,
+                                                HttpStatusCode.NOT_IMPLEMENTED.getStatusCode(), Locale.ROOT);
         }
 
         return navigationTargetEntitySet;
@@ -193,15 +198,16 @@ public class UriResourceNavigationResolver {
      * @return the requested Entity
      * @throws ODataApplicationException if entity was not found in the datasource
      */
-    public Entity resolveSimpleEntityRequest(UriResourceEntitySet uriResourceEntitySet) throws ODataApplicationException {
+    public Entity resolveSimpleEntityRequest(UriResourceEntitySet uriResourceEntitySet)
+            throws ODataApplicationException {
         // fetch the data from backend for this requested Entity and deliver as Entity
         List<UriParameter> keyPredicates = uriResourceEntitySet.getKeyPredicates();
         AbstractSensorThingsEntityService<?, ?> responseService = getEntityService(uriResourceEntitySet);
         Entity responseEntity = responseService.getEntity(getEntityIdFromKeyParams(keyPredicates));
 
         if (responseEntity == null) {
-            throw new ODataApplicationException("Entity not found.",
-                    HttpStatusCode.NOT_FOUND.getStatusCode(), Locale.ROOT);
+            throw new ODataApplicationException(ENTITY_NOT_FOUND,
+                                                HttpStatusCode.NOT_FOUND.getStatusCode(), Locale.ROOT);
         }
         return responseEntity;
     }
@@ -215,7 +221,8 @@ public class UriResourceNavigationResolver {
      * @return the requested Entity
      * @throws ODataApplicationException if entity was not found in the datasource
      */
-    public Entity resolveComplexEntityRequest(UriResource lastSegment, EntityQueryParams requestParams) throws ODataApplicationException {
+    public Entity resolveComplexEntityRequest(UriResource lastSegment, EntityQueryParams requestParams)
+            throws ODataApplicationException {
 
         Entity responseEntity = null;
 
@@ -225,16 +232,23 @@ public class UriResourceNavigationResolver {
 
             // e.g. /Things(1)/Location
             if (navKeyPredicates.isEmpty()) {
-                responseEntity = serviceRepository.getEntityService(requestParams.getTargetEntitySet().getEntityType().getName())
+                responseEntity = serviceRepository.getEntityService(requestParams.getTargetEntitySet()
+                                                                                 .getEntityType()
+                                                                                 .getName())
                         .getRelatedEntity(requestParams.getSourceId(), requestParams.getSourceEntityType());
 
-            } else { // e.g. /Things(1)/Locations(1)
-                responseEntity = serviceRepository.getEntityService(requestParams.getTargetEntitySet().getEntityType().getName())
-                        .getRelatedEntity(requestParams.getSourceId(), requestParams.getSourceEntityType(), getEntityIdFromKeyParams(navKeyPredicates));
+            } else {
+                // e.g. /Things(1)/Locations(1)
+                responseEntity = serviceRepository.getEntityService(requestParams.getTargetEntitySet()
+                                                                                 .getEntityType()
+                                                                                 .getName())
+                        .getRelatedEntity(requestParams.getSourceId(),
+                                          requestParams.getSourceEntityType(),
+                                          getEntityIdFromKeyParams(navKeyPredicates));
             }
             if (responseEntity == null) {
-                throw new ODataApplicationException("Entity not found.",
-                        HttpStatusCode.NOT_FOUND.getStatusCode(), Locale.ROOT);
+                throw new ODataApplicationException(ENTITY_NOT_FOUND,
+                                                    HttpStatusCode.NOT_FOUND.getStatusCode(), Locale.ROOT);
             }
         }
         return responseEntity;

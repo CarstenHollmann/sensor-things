@@ -51,7 +51,9 @@ public class ComplexTypeRepository {
 
     public AbstractComplexType getComplexType(FullQualifiedName complexTypeFullQualifiedName) {
         AbstractComplexType provider = complexTypes.stream()
-                .filter(p -> p.getFullQualifiedTypeName().getFullQualifiedNameAsString().equals(complexTypeFullQualifiedName.getFullQualifiedNameAsString()))
+                .filter(p -> p.getFullQualifiedTypeName()
+                              .getFullQualifiedNameAsString()
+                              .equals(complexTypeFullQualifiedName.getFullQualifiedNameAsString()))
                 .findAny()
                 .orElse(null);
         return provider;

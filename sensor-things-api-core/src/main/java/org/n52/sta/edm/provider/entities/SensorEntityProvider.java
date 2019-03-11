@@ -52,6 +52,7 @@ import org.springframework.stereotype.Component;
  *
  */
 @Component
+@SuppressWarnings("checkstyle:avoidstaticimport")
 public class SensorEntityProvider extends AbstractSensorThingsEntityProvider {
 
     // Entity Type Name

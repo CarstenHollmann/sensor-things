@@ -46,7 +46,9 @@ public class SensorThingsEntityProviderRepository {
 
     public AbstractSensorThingsEntityProvider getEntityProvider(FullQualifiedName entityTypefullQualifiedName) {
         AbstractSensorThingsEntityProvider provider = entityProvider.stream()
-                .filter(p -> p.getFullQualifiedTypeName().getFullQualifiedNameAsString().equals(entityTypefullQualifiedName.getFullQualifiedNameAsString()))
+                .filter(p -> p.getFullQualifiedTypeName()
+                              .getFullQualifiedNameAsString()
+                              .equals(entityTypefullQualifiedName.getFullQualifiedNameAsString()))
                 .findAny()
                 .orElse(null);
         return provider;

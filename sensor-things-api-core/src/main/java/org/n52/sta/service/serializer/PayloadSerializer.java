@@ -66,27 +66,34 @@ public class PayloadSerializer {
     private QueryOptionsHandler queryOptionsHandler;
 
     @Autowired
-    EntityAnnotator annotator;
+    private EntityAnnotator annotator;
 
     private ServiceMetadata edm;
 
-    public byte[] encodeEntity(ServiceMetadata serviceMetadata, Entity entity, EdmEntityType entityType, EdmEntitySet entitySet, QueryOptions queryOptions, Set<String> watchedProperties) throws SerializerException, IOException {
+    public byte[] encodeEntity(ServiceMetadata serviceMetadata,
+                               Entity entity,
+                               EdmEntityType entityType,
+                               EdmEntitySet entitySet,
+                               QueryOptions queryOptions,
+                               Set<String> watchedProperties)
+                  throws SerializerException, IOException {
         //TODO: Actually serialize Object to JSON
         InputStream payload = createResponseContent(edm, entity, entityType, entitySet, queryOptions);
 
-//        if (watchedProperties != null) {
-//            // Only return updated property
-//        return UnpooledcopiedBuffer(entity.toString().getBytes());
-//        } else {
-//            // Return normally serialized object with this.fields selectItems
-//            return Unpooled.copiedBuffer(entity.toString().getBytes());
-//        }
         return ByteStreams.toByteArray(payload);
     }
 
-    private InputStream createResponseContent(ServiceMetadata serviceMetadata, Entity entity, EdmEntityType entityType, EdmEntitySet entitySet, QueryOptions queryOptions) throws SerializerException {
+    private InputStream createResponseContent(ServiceMetadata serviceMetadata,
+                                              Entity rawentity,
+                                              EdmEntityType entityType,
+                                              EdmEntitySet entitySet,
+                                              QueryOptions queryOptions)
+                        throws SerializerException {
         SensorThingsSerializer serializer = new SensorThingsSerializer(ContentType.JSON_NO_METADATA);
-        entity = annotator.annotateEntity(entity, entityType, queryOptions.getBaseURI(), queryOptions.getSelectOption());
+        Entity entity = annotator.annotateEntity(rawentity,
+                                          entityType,
+                                          queryOptions.getBaseURI(),
+                                          queryOptions.getSelectOption());
 
         ContextURL.Builder contextUrlBuilder = ContextURL.with()
                 .entitySet(entitySet)
@@ -95,13 +102,17 @@ public class PayloadSerializer {
                 entityType, queryOptions.getExpandOption(), queryOptions.getSelectOption()));
         ContextURL contextUrl = contextUrlBuilder.build();
 
-        EntitySerializerOptions opts = EntitySerializerOptions.with()
+        EntitySerializerOptions opts = EntitySerializerOptions
+                .with()
                 .contextURL(contextUrl)
                 .select(queryOptions.getSelectOption())
                 .expand(queryOptions.getExpandOption())
                 .build();
 
-        SerializerResult serializerResult = serializer.entity(serviceMetadata, entityType, entity, opts);
+        SerializerResult serializerResult = serializer.entity(serviceMetadata,
+                                                              entityType,
+                                                              entity,
+                                                              opts);
         InputStream serializedContent = serializerResult.getContent();
 
         return serializedContent;

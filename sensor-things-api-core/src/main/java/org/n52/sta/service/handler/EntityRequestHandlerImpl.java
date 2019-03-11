@@ -55,6 +55,7 @@ import org.springframework.stereotype.Component;
  *
  * @author <a href="mailto:s.drost@52north.org">Sebastian Drost</a>
  */
+@SuppressWarnings("checkstyle:avoidstaticimport")
 @Component
 public class EntityRequestHandlerImpl extends AbstractEntityRequestHandler<SensorThingsRequest, EntityResponse> {
 
@@ -65,7 +66,7 @@ public class EntityRequestHandlerImpl extends AbstractEntityRequestHandler<Senso
     private QueryOptionsHandler queryOptionsHandler;
 
     @Autowired
-    EntityAnnotator entityAnnotator;
+    private EntityAnnotator entityAnnotator;
 
     @Override
     public EntityResponse handleEntityRequest(SensorThingsRequest request) throws ODataApplicationException {
@@ -116,7 +117,8 @@ public class EntityRequestHandlerImpl extends AbstractEntityRequestHandler<Senso
         return response;
     }
 
-    private EntityResponse createResponseForNavigation(List<UriResource> resourcePaths) throws ODataApplicationException {
+    private EntityResponse createResponseForNavigation(List<UriResource> resourcePaths)
+            throws ODataApplicationException {
         // determine the target query parameters and fetch Entity for it
         EntityQueryParams requestParams = navigationResolver.resolveUriResourceNavigationPaths(resourcePaths);
         UriResource lastSegment = resourcePaths.get(resourcePaths.size() - 1);
@@ -129,7 +131,8 @@ public class EntityRequestHandlerImpl extends AbstractEntityRequestHandler<Senso
         return response;
     }
 
-    private UriResourceEntitySet getUriResourceEntitySet(List<UriResource> resourcePaths) throws ODataApplicationException {
+    private UriResourceEntitySet getUriResourceEntitySet(List<UriResource> resourcePaths)
+            throws ODataApplicationException {
         return navigationResolver.resolveRootUriResource(resourcePaths.get(0));
     }
 

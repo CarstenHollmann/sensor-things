@@ -37,11 +37,6 @@ import java.util.Set;
 import org.apache.olingo.commons.api.data.Entity;
 import org.apache.olingo.commons.api.data.EntityCollection;
 import org.apache.olingo.commons.api.edm.EdmEntityType;
-import org.apache.olingo.server.api.ODataApplicationException;
-import org.apache.olingo.server.api.uri.queryoption.expression.Expression;
-import org.apache.olingo.server.api.uri.queryoption.expression.ExpressionVisitException;
-import org.n52.series.db.beans.ProcedureEntity;
-import org.n52.series.db.beans.sta.QThingEntity;
 import org.apache.olingo.commons.api.http.HttpMethod;
 import org.apache.olingo.commons.api.http.HttpStatusCode;
 import org.apache.olingo.server.api.ODataApplicationException;
@@ -54,7 +49,6 @@ import org.n52.sta.data.query.ThingQuerySpecifications;
 import org.n52.sta.data.repositories.ThingRepository;
 import org.n52.sta.data.service.EntityServiceRepository.EntityTypes;
 import org.n52.sta.mapping.ThingMapper;
-import org.n52.sta.service.query.FilterExpressionVisitor;
 import org.n52.sta.service.query.QueryOptions;
 import org.springframework.stereotype.Component;
 
@@ -68,9 +62,9 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 @Component
 public class ThingService extends AbstractSensorThingsEntityService<ThingRepository, ThingEntity> {
 
-    private ThingMapper mapper;
+    private final ThingQuerySpecifications tQS = new ThingQuerySpecifications();
 
-    private final static ThingQuerySpecifications tQS = new ThingQuerySpecifications();
+    private ThingMapper mapper;
 
     public ThingService(ThingRepository repository, ThingMapper mapper) {
         super(repository);
@@ -86,7 +80,9 @@ public class ThingService extends AbstractSensorThingsEntityService<ThingReposit
     public EntityCollection getEntityCollection(QueryOptions queryOptions) throws ODataApplicationException {
         EntityCollection retEntitySet = new EntityCollection();
         Predicate filter = getFilterPredicate(ThingEntity.class, queryOptions);
-        getRepository().findAll(filter, createPageableRequest(queryOptions)).forEach(t -> retEntitySet.getEntities().add(mapper.createEntity(t)));
+        getRepository().findAll(filter,
+                                createPageableRequest(queryOptions))
+                                    .forEach(t -> retEntitySet.getEntities().add(mapper.createEntity(t)));
         return retEntitySet;
     }
 
@@ -97,7 +93,10 @@ public class ThingService extends AbstractSensorThingsEntityService<ThingReposit
     }
 
     @Override
-    public EntityCollection getRelatedEntityCollection(Long sourceId, EdmEntityType sourceEntityType, QueryOptions queryOptions) throws ODataApplicationException {
+    public EntityCollection getRelatedEntityCollection(Long sourceId,
+                                                       EdmEntityType sourceEntityType,
+                                                       QueryOptions queryOptions)
+                            throws ODataApplicationException {
         BooleanExpression filter = tQS.withRelatedLocation(sourceId);
 
         filter = filter.and(getFilterPredicate(ThingEntity.class, queryOptions));
@@ -125,7 +124,7 @@ public class ThingService extends AbstractSensorThingsEntityService<ThingReposit
 
     @Override
     public boolean existsRelatedEntity(Long sourceId, EdmEntityType sourceEntityType, Long targetId) {
-        switch(sourceEntityType.getFullQualifiedName().getFullQualifiedNameAsString()) {
+        switch (sourceEntityType.getFullQualifiedName().getFullQualifiedNameAsString()) {
         case "iot.Location": {
             BooleanExpression filter = tQS.withRelatedLocation(sourceId);
             if (targetId != null) {
@@ -174,11 +173,11 @@ public class ThingService extends AbstractSensorThingsEntityService<ThingReposit
      * @param sourceId Id of the Source Entity
      * @param sourceEntityType Type of the Source Entity
      * @param targetId Id of the Thing to be retrieved
-     * @return Optional<ThingEntity> Requested Entity
+     * @return Optional&lt;ThingEntity&gt; Requested Entity
      */
     private Optional<ThingEntity> getRelatedEntityRaw(Long sourceId, EdmEntityType sourceEntityType, Long targetId) {
         BooleanExpression filter;
-        switch(sourceEntityType.getFullQualifiedName().getFullQualifiedNameAsString()) {
+        switch (sourceEntityType.getFullQualifiedName().getFullQualifiedNameAsString()) {
         case "iot.HistoricalLocation": {
             filter = tQS.withRelatedHistoricalLocation(sourceId);
             break;
@@ -206,6 +205,7 @@ public class ThingService extends AbstractSensorThingsEntityService<ThingReposit
     }
 
     @Override
+    @SuppressWarnings("checkstyle:parameterassignment")
     public ThingEntity create(ThingEntity thing) throws ODataApplicationException {
         if (!thing.isProcesssed()) {
             if (thing.getId() != null && !thing.isSetName()) {
@@ -251,6 +251,11 @@ public class ThingService extends AbstractSensorThingsEntityService<ThingReposit
                 HttpStatusCode.BAD_REQUEST.getStatusCode(), Locale.getDefault());
     }
 
+    @Override
+    public ThingEntity update(ThingEntity entity) throws ODataApplicationException {
+        return getRepository().save(entity);
+    }
+
     private void checkUpdate(ThingEntity thing) throws ODataApplicationException {
         if (thing.hasLocationEntities()) {
             for (LocationEntity location : thing.getLocationEntities()) {
@@ -262,11 +267,6 @@ public class ThingService extends AbstractSensorThingsEntityService<ThingReposit
                 checkInlineDatastream(datastream);
             }
         }
-    }
-
-    @Override
-    public ThingEntity update(ThingEntity entity) throws ODataApplicationException {
-        return getRepository().save(entity);
     }
 
     @Override
@@ -348,18 +348,22 @@ public class ThingService extends AbstractSensorThingsEntityService<ThingReposit
         }
     }
 
+    @SuppressWarnings("unchecked")
     private AbstractSensorThingsEntityService<?, LocationEntity> getLocationService() {
-        return (AbstractSensorThingsEntityService<?, LocationEntity>) getEntityService(EntityTypes.Location);
+        return (AbstractSensorThingsEntityService<?, LocationEntity>)
+                getEntityService(EntityTypes.Location);
     }
 
+    @SuppressWarnings("unchecked")
     private AbstractSensorThingsEntityService<?, HistoricalLocationEntity> getHistoricalLocationService() {
-        return (AbstractSensorThingsEntityService<?, HistoricalLocationEntity>) getEntityService(
-                EntityTypes.HistoricalLocation);
+        return (AbstractSensorThingsEntityService<?, HistoricalLocationEntity>)
+                getEntityService(EntityTypes.HistoricalLocation);
     }
 
+    @SuppressWarnings("unchecked")
     private AbstractSensorThingsEntityService<?, DatastreamEntity> getDatastreamService() {
-        return (AbstractSensorThingsEntityService<?, DatastreamEntity>) getEntityService(
-                EntityTypes.Datastream);
+        return (AbstractSensorThingsEntityService<?, DatastreamEntity>)
+                getEntityService(EntityTypes.Datastream);
     }
 
 }

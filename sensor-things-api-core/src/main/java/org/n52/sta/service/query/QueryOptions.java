@@ -44,21 +44,21 @@ import org.n52.sta.data.service.AbstractSensorThingsEntityService;
  */
 public interface QueryOptions {
 
-    static final int DEFAULT_TOP = 100;
+    int DEFAULT_TOP = 100;
 
     /**
      * Get the {@link UriInfo}
      *
      * @return the uriInfo
      */
-    public UriInfo getUriInfo();
+    UriInfo getUriInfo();
 
     /**
      * Get the baseURI
      *
      * @return the baseURI
      */
-    public String getBaseURI();
+    String getBaseURI();
 
     /**
      * Check if {@link CountOption} is present

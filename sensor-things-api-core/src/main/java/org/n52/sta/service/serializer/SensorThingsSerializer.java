@@ -104,6 +104,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+//CHECKSTYLE:OFF
 public class SensorThingsSerializer extends AbstractODataSerializer {
 
     private static final Map<Geospatial.Type, String> geoValueTypeToJsonName;
@@ -1442,3 +1443,4 @@ public class SensorThingsSerializer extends AbstractODataSerializer {
         return s.replace("odata", "iot");
     }
 }
+//CHECKSTYLE:ON

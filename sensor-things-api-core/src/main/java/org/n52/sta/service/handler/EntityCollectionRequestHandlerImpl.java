@@ -63,7 +63,9 @@ import org.springframework.stereotype.Component;
  * @author <a href="mailto:s.drost@52north.org">Sebastian Drost</a>
  */
 @Component
-public class EntityCollectionRequestHandlerImpl extends AbstractEntityCollectionRequestHandler<SensorThingsRequest, EntityCollectionResponse> {
+@SuppressWarnings("checkstyle:avoidstaticimport")
+public class EntityCollectionRequestHandlerImpl
+        extends AbstractEntityCollectionRequestHandler<SensorThingsRequest, EntityCollectionResponse> {
 
     @Autowired
     private EntityServiceRepository serviceRepository;
@@ -75,10 +77,11 @@ public class EntityCollectionRequestHandlerImpl extends AbstractEntityCollection
     private QueryOptionsHandler queryOptionsHandler;
 
     @Autowired
-    EntityAnnotator entityAnnotator;
+    private EntityAnnotator entityAnnotator;
 
     @Override
-    public EntityCollectionResponse handleEntityCollectionRequest(SensorThingsRequest request) throws ODataApplicationException {
+    public EntityCollectionResponse handleEntityCollectionRequest(SensorThingsRequest request)
+            throws ODataApplicationException {
         EntityCollectionResponse response = null;
 
         // handle request depending on the number of UriResource paths
@@ -127,7 +130,7 @@ public class EntityCollectionRequestHandlerImpl extends AbstractEntityCollection
 
         // fetch the data from backend for this requested EntitySetName and
         // deliver as EntityCollection
-        AbstractSensorThingsEntityService<?,?> responseService =
+        AbstractSensorThingsEntityService< ? , ? > responseService =
                 serviceRepository.getEntityService(uriResourceEntitySet.getEntityType().getName());
         EntityCollection responseEntityCollection = responseService.getEntityCollection(queryOptions);
 
@@ -147,16 +150,22 @@ public class EntityCollectionRequestHandlerImpl extends AbstractEntityCollection
         return response;
     }
 
-    private EntityCollectionResponse createResponseForNavigation(List<UriResource> resourcePaths, QueryOptions queryOptions) throws ODataApplicationException {
+    private EntityCollectionResponse createResponseForNavigation(List<UriResource> resourcePaths,
+                                                                 QueryOptions queryOptions)
+            throws ODataApplicationException {
 
         // determine the target query parameters and fetch EntityCollection for it
         EntityQueryParams queryParams = navigationResolver.resolveUriResourceNavigationPaths(resourcePaths);
 
-        AbstractSensorThingsEntityService<?,?> entityService = serviceRepository.getEntityService(queryParams.getTargetEntitySet().getEntityType().getName());
+        AbstractSensorThingsEntityService<?,?> entityService = serviceRepository
+                .getEntityService(queryParams.getTargetEntitySet().getEntityType().getName());
         EntityCollection responseEntityCollection = entityService
-                .getRelatedEntityCollection(queryParams.getSourceId(), queryParams.getSourceEntityType(), queryOptions);
+                .getRelatedEntityCollection(queryParams.getSourceId(),
+                                            queryParams.getSourceEntityType(),
+                                            queryOptions);
 
-        long count = entityService.getRelatedEntityCollectionCount(queryParams.getSourceId(), queryParams.getSourceEntityType());
+        long count = entityService.getRelatedEntityCollectionCount(queryParams.getSourceId(),
+                                                                   queryParams.getSourceEntityType());
 
         if (queryOptions.hasCountOption()) {
             responseEntityCollection.setCount(Long.valueOf(count).intValue());
@@ -178,13 +187,19 @@ public class EntityCollectionRequestHandlerImpl extends AbstractEntityCollection
             StringBuilder builder = new StringBuilder(queryOptions.getBaseURI());
             for (UriResource resource : queryOptions.getUriInfo().getUriResourceParts()) {
                 builder.append("/").append(resource.toString());
-                if (queryParams != null && resource.toString().startsWith(queryParams.getSourceEntityType().getName())) {
+                if (queryParams != null
+                    && resource.toString().startsWith(queryParams.getSourceEntityType().getName())) {
                     builder.append("(").append(queryParams.getSourceId()).append(")");
                 }
             }
             builder.append("?");
-            builder.append(SystemQueryOptionKind.SKIP).append("=").append(currentCount);
-            builder.append("&").append(SystemQueryOptionKind.TOP).append("=").append(queryOptions.getTopOption().getValue());
+            builder.append(SystemQueryOptionKind.SKIP)
+                   .append("=")
+                   .append(currentCount);
+            builder.append("&")
+                   .append(SystemQueryOptionKind.TOP)
+                   .append("=")
+                   .append(queryOptions.getTopOption().getValue());
             try {
                 return new URI(builder.toString());
             } catch (URISyntaxException e) {

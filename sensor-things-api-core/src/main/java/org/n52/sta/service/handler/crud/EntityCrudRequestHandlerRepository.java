@@ -111,8 +111,10 @@ public class EntityCrudRequestHandlerRepository {
         case "FeatureOfInterest": {
             return featureOfInterestEntityCrudRequestHandler;
         }
+        default: {
+            return null;
         }
-        return null;
+        }
     }
 
 }

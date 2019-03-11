@@ -280,7 +280,7 @@ public class GeometryMapper {
     private Coordinate[] createCoordinates(Iterator<Point> iterator) {
         List<Coordinate> coordinates = new LinkedList<>();
         while (iterator.hasNext()) {
-            coordinates.add(createCoordinate((Point) iterator.next()));
+            coordinates.add(createCoordinate(iterator.next()));
         }
         return coordinates.toArray(new Coordinate[0]);
     }

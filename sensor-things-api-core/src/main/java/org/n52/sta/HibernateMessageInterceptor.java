@@ -30,7 +30,6 @@ package org.n52.sta;
 
 import java.io.Serializable;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 import org.hibernate.EmptyInterceptor;
@@ -54,6 +53,8 @@ public class HibernateMessageInterceptor extends EmptyInterceptor {
 
     @Autowired
     private STAEventHandler mqttclient;
+    
+    private final String PARSED_MESSAGE = "Parsed Entity to MQTTHandler: ";
 
     /**
      * Handle new Create Events
@@ -65,7 +66,7 @@ public class HibernateMessageInterceptor extends EmptyInterceptor {
                           Object[] state,
                           String[] propertyNames,
                           Type[] types) {
-        LOGGER.debug("Parsed Entity to MQTTHandler: " + entity.toString());
+        LOGGER.debug(PARSED_MESSAGE + entity.toString());
         mqttclient.handleEvent(entity, null);
         return super.onSave(entity, id, state, propertyNames, types);
     }
@@ -81,7 +82,7 @@ public class HibernateMessageInterceptor extends EmptyInterceptor {
                                 Object[] previousState,
                                 String[] propertyNames,
                                 Type[] types) {
-        LOGGER.debug("Parsed Entity to MQTTHandler: " + entity.toString());
+        LOGGER.debug(PARSED_MESSAGE + entity.toString());
         mqttclient.handleEvent(entity, findDifferences(currentState, previousState, propertyNames));
         return super.onFlushDirty(entity, id, currentState, previousState, propertyNames, types);
     }

@@ -35,16 +35,15 @@ package org.n52.sta.utils;
 
 import static org.n52.sta.edm.provider.SensorThingsEdmConstants.SELF_LINK_ANNOTATION;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.olingo.commons.api.data.Entity;
 import org.apache.olingo.commons.api.data.Link;
 import org.apache.olingo.commons.api.edm.EdmEntityType;
 import org.apache.olingo.commons.api.edm.EdmNavigationProperty;
-import org.apache.olingo.server.api.uri.queryoption.QueryOption;
 import org.apache.olingo.server.api.uri.queryoption.SelectOption;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Helper class to annotate Entities
@@ -52,6 +51,7 @@ import java.util.List;
  * @author <a href="mailto:s.drost@52north.org">Sebastian Drost</a>
  */
 @Component
+@SuppressWarnings("checkstyle:avoidstaticimport")
 public class EntityAnnotator {
 
     /**
@@ -88,7 +88,10 @@ public class EntityAnnotator {
             if (!hasSelectOption || selector.contains(np)) {
                 EdmNavigationProperty navProp = entityType.getNavigationProperty(np);
 
-                String navigationAnnotationValue = String.join("/", baseUri, entity.getId().getPath(), navProp.getName());
+                String navigationAnnotationValue = String.join("/",
+                                                               baseUri,
+                                                               entity.getId().getPath(),
+                                                               navProp.getName());
 
                 Link link = new Link();
                 link.setTitle(np);

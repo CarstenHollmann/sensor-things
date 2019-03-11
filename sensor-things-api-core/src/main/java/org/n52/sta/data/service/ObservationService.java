@@ -84,7 +84,8 @@ import com.querydsl.core.types.dsl.BooleanExpression;
  *
  */
 @Component
-public class ObservationService extends AbstractSensorThingsEntityService<DataRepository<DataEntity<?>>, DataEntity<?>> {
+public class ObservationService
+        extends AbstractSensorThingsEntityService<DataRepository<DataEntity< ? >>, DataEntity< ? >> {
 
     private ObservationMapper mapper;
 
@@ -152,11 +153,11 @@ public class ObservationService extends AbstractSensorThingsEntityService<DataRe
     private BooleanExpression getFilter(Long sourceId, EdmEntityType sourceEntityType) {
         BooleanExpression filter;
         switch (sourceEntityType.getFullQualifiedName().getFullQualifiedNameAsString()) {
-        case "iot.Datastream": {
+        case IOT_DATASTREAM: {
             filter = oQS.withDatastream(sourceId);
             break;
         }
-        case "iot.FeatureOfInterest": {
+        case IOT_FEATURE: {
             filter = oQS.withFeatureOfInterest(sourceId);
             break;
         }
@@ -180,11 +181,11 @@ public class ObservationService extends AbstractSensorThingsEntityService<DataRe
     public boolean existsRelatedEntity(Long sourceId, EdmEntityType sourceEntityType, Long targetId) {
         BooleanExpression filter;
         switch (sourceEntityType.getFullQualifiedName().getFullQualifiedNameAsString()) {
-        case "iot.Datastream": {
+        case IOT_DATASTREAM: {
             filter = oQS.withDatastream(sourceId);
             break;
         }
-        case "iot.FeatureOfInterest": {
+        case IOT_FEATURE: {
             filter = oQS.withFeatureOfInterest(sourceId);
             break;
         }
@@ -333,7 +334,7 @@ public class ObservationService extends AbstractSensorThingsEntityService<DataRe
                 DataEntity<?> merged = mapper.merge(existing.get(), entity);
                 return getRepository().save(merged);
             }
-            throw new ODataApplicationException("Entity not found.",
+            throw new ODataApplicationException(ENTITY_NOT_FOUND,
                     HttpStatusCode.NOT_FOUND.getStatusCode(), Locale.ROOT);
         } else if (HttpMethod.PUT.equals(method)) {
             throw new ODataApplicationException("Http PUT is not yet supported!",
@@ -355,7 +356,7 @@ public class ObservationService extends AbstractSensorThingsEntityService<DataRe
             checkDataset(observation);
             delete(observation);
         } else {
-            throw new ODataApplicationException("Entity not found.",
+            throw new ODataApplicationException(ENTITY_NOT_FOUND,
                     HttpStatusCode.NOT_FOUND.getStatusCode(), Locale.ROOT);
         }
     }
@@ -381,6 +382,29 @@ public class ObservationService extends AbstractSensorThingsEntityService<DataRe
         }
         observation.setDataset(datasetRepository.saveAndFlush(dataset));
     }
+    
+    private DatasetEntity checkDataset(DatastreamEntity datastream,
+                                       AbstractFeatureEntity<?> feature,
+                                       CategoryEntity category,
+            OfferingEntity offering) {
+       DatasetEntity dataset = getDatasetEntity(datastream.getObservationType().getFormat());
+       dataset.setProcedure(datastream.getProcedure());
+       dataset.setPhenomenon(datastream.getObservableProperty());
+       dataset.setCategory(category);
+       dataset.setFeature(feature);
+       dataset.setOffering(offering);
+       dataset.setUnit(datastream.getUnit());
+       dataset.setObservationType(datastream.getObservationType());
+       BooleanExpression query = dQS.matchProcedures(Long.toString(datastream.getProcedure().getId()))
+                .and(dQS.matchPhenomena(Long.toString(datastream.getObservableProperty().getId()))
+                        .and(dQS.matchFeatures(Long.toString(feature.getId())))
+                        .and(dQS.matchOfferings(Long.toString(offering.getId()))));
+       if (!datasetRepository.exists(query)) {
+           return datasetRepository.save(dataset);
+       } else {
+           return datasetRepository.findOne(query).get();
+       }
+    }
 
     private DatastreamEntity checkDatastream(StaDataEntity observation) throws ODataApplicationException {
         DatastreamEntity datastream = getDatastreamService().create(observation.getDatastream());
@@ -388,7 +412,8 @@ public class ObservationService extends AbstractSensorThingsEntityService<DataRe
         return datastream;
     }
 
-    private AbstractFeatureEntity<?> checkFeature(StaDataEntity observation, DatastreamEntity datastream) throws ODataApplicationException {
+    private AbstractFeatureEntity<?> checkFeature(StaDataEntity observation, DatastreamEntity datastream)
+            throws ODataApplicationException {
         if (!observation.hasFeatureOfInterest()) {
             AbstractFeatureEntity<?> feature = null;
             for (LocationEntity location : datastream.getThing().getLocationEntities()) {
@@ -401,7 +426,8 @@ public class ObservationService extends AbstractSensorThingsEntityService<DataRe
                 }
             }
             if (feature == null) {
-                throw new ODataApplicationException("The observation to create is invalid. Missing feature or thing.location!",
+                throw new ODataApplicationException("The observation to create is invalid."
+                        + "Missing feature or thing.location!",
                         HttpStatusCode.BAD_REQUEST.getStatusCode(), Locale.getDefault());
             }
             observation.setFeatureOfInterest(feature);
@@ -455,27 +481,6 @@ public class ObservationService extends AbstractSensorThingsEntityService<DataRe
         }
     }
 
-    private DatasetEntity checkDataset(DatastreamEntity datastream, AbstractFeatureEntity<?> feature, CategoryEntity category,
-            OfferingEntity offering) {
-       DatasetEntity dataset = getDatasetEntity(datastream.getObservationType().getFormat());
-       dataset.setProcedure(datastream.getProcedure());
-       dataset.setPhenomenon(datastream.getObservableProperty());
-       dataset.setCategory(category);
-       dataset.setFeature(feature);
-       dataset.setOffering(offering);
-       dataset.setUnit(datastream.getUnit());
-       dataset.setObservationType(datastream.getObservationType());
-       BooleanExpression query = dQS.matchProcedures(Long.toString(datastream.getProcedure().getId()))
-                .and(dQS.matchPhenomena(Long.toString(datastream.getObservableProperty().getId()))
-                        .and(dQS.matchFeatures(Long.toString(feature.getId())))
-                        .and(dQS.matchOfferings(Long.toString(offering.getId()))));
-       if (!datasetRepository.exists(query)) {
-           return datasetRepository.save(dataset);
-       } else {
-           return datasetRepository.findOne(query).get();
-       }
-    }
-
     private DataEntity<?> checkData(StaDataEntity observation, Dataset dataset) {
         DataEntity<?> data = getDataEntity(observation, dataset);
         if (data != null) {
@@ -485,14 +490,16 @@ public class ObservationService extends AbstractSensorThingsEntityService<DataRe
     }
 
     private Dataset updateDataset(Dataset dataset, DataEntity<?> data) {
-        if (!dataset.isSetFirstValueAt() || (dataset.isSetFirstValueAt() && data.getSamplingTimeStart().before(dataset.getFirstValueAt()))) {
+        if (!dataset.isSetFirstValueAt()
+            || (dataset.isSetFirstValueAt() && data.getSamplingTimeStart().before(dataset.getFirstValueAt()))) {
             dataset.setFirstValueAt(data.getSamplingTimeStart());
             dataset.setFirstObservation(data);
             if (data instanceof QuantityDataEntity) {
                 dataset.setFirstQuantityValue(((QuantityDataEntity) data).getValue());
             }
         }
-        if (!dataset.isSetLastValueAt() || (dataset.isSetLastValueAt() && data.getSamplingTimeEnd().after(dataset.getLastValueAt()))) {
+        if (!dataset.isSetLastValueAt()
+            || (dataset.isSetLastValueAt() && data.getSamplingTimeEnd().after(dataset.getLastValueAt()))) {
             dataset.setLastValueAt(data.getSamplingTimeEnd());
             dataset.setLastObservation(data);
             if (data instanceof QuantityDataEntity) {
@@ -502,17 +509,20 @@ public class ObservationService extends AbstractSensorThingsEntityService<DataRe
         return datasetRepository.save((DatasetEntity) dataset);
     }
 
-    private void updateDatastream(DatastreamEntity datastream, DatasetEntity dataset) throws ODataApplicationException {
+    private void updateDatastream(DatastreamEntity datastream, DatasetEntity dataset)
+            throws ODataApplicationException {
         if (datastream.getDatasets() != null && !datastream.getDatasets().contains(dataset)) {
             datastream.addDataset(dataset);
             getDatastreamService().update(datastream);
         }
     }
 
+    @SuppressWarnings("unchecked")
     private AbstractSensorThingsEntityService<?, DatastreamEntity> getDatastreamService() {
         return (AbstractSensorThingsEntityService<?, DatastreamEntity>) getEntityService(EntityTypes.Datastream);
     }
 
+    @SuppressWarnings("unchecked")
     private AbstractSensorThingsEntityService<?, AbstractFeatureEntity<?>> getFeatureOfInterestService() {
         return (AbstractSensorThingsEntityService<?, AbstractFeatureEntity<?>>) getEntityService(
                 EntityTypes.FeatureOfInterest);

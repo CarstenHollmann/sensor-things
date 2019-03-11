@@ -54,6 +54,8 @@ import org.n52.sta.utils.UriResourceNavigationResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+
+@SuppressWarnings("checkstyle:avoidstaticimport")
 public abstract class AbstractEntityCrudRequestHandler<T extends IdEntity> {
 
     @Autowired
@@ -64,14 +66,16 @@ public abstract class AbstractEntityCrudRequestHandler<T extends IdEntity> {
 
     protected abstract AbstractMapper<T> getMapper();
 
-    @Transactional(rollbackFor=Exception.class)
-    public EntityResponse handleCreateEntityRequest(Entity entity, List<UriResource> resourcePaths) throws ODataApplicationException {
+    @Transactional(rollbackFor = Exception.class)
+    public EntityResponse handleCreateEntityRequest(Entity entity, List<UriResource> resourcePaths)
+            throws ODataApplicationException {
         UriResourceEntitySet uriResourceEntitySet = getUriResourceEntitySet(resourcePaths);
         EdmEntitySet responseEntitySet = uriResourceEntitySet.getEntitySet();
         Entity responseEntity = handleCreateEntityRequest(entity);
         EntityResponse response = new EntityResponse();
         if (resourcePaths.size() > 1) {
-            response.setEntitySet(navigationResolver.resolveUriResourceNavigationPaths(resourcePaths).getTargetEntitySet());
+            response.setEntitySet(navigationResolver.resolveUriResourceNavigationPaths(resourcePaths)
+                                                    .getTargetEntitySet());
         } else {
             response.setEntitySet(responseEntitySet);
         }
@@ -81,7 +85,7 @@ public abstract class AbstractEntityCrudRequestHandler<T extends IdEntity> {
 
     protected abstract Entity handleCreateEntityRequest(Entity entity) throws ODataApplicationException;
 
-    @Transactional(rollbackFor=Exception.class)
+    @Transactional(rollbackFor = Exception.class)
     public EntityResponse handleUpdateEntityRequest(Entity entity, HttpMethod method,
             List<UriResource> resourcePaths) throws ODataApplicationException {
         UriResourceEntitySet uriResourceEntitySet = getUriResourceEntitySet(resourcePaths);
@@ -93,11 +97,12 @@ public abstract class AbstractEntityCrudRequestHandler<T extends IdEntity> {
         return response;
     }
 
+    protected abstract Entity handleUpdateEntityRequest(Entity entity, HttpMethod httpMethod)
+            throws ODataApplicationException;
 
-    protected abstract Entity handleUpdateEntityRequest(Entity entity, HttpMethod httpMethod) throws ODataApplicationException;
-
-    @Transactional(rollbackFor=Exception.class)
-    public EntityResponse handleDeleteEntityRequest(List<UriResource> resourcePaths) throws ODataApplicationException {
+    @Transactional(rollbackFor = Exception.class)
+    public EntityResponse handleDeleteEntityRequest(List<UriResource> resourcePaths)
+            throws ODataApplicationException {
         UriResourceEntitySet uriResourceEntitySet = getUriResourceEntitySet(resourcePaths);
         EdmEntitySet responseEntitySet = uriResourceEntitySet.getEntitySet();
         handleDeleteEntityRequest(getId(uriResourceEntitySet));
@@ -109,16 +114,17 @@ public abstract class AbstractEntityCrudRequestHandler<T extends IdEntity> {
 
     protected abstract void handleDeleteEntityRequest(Long id) throws ODataApplicationException;
 
-    protected UriResourceEntitySet getUriResourceEntitySet(List<UriResource> resourcePaths) throws ODataApplicationException {
+    protected UriResourceEntitySet getUriResourceEntitySet(List<UriResource> resourcePaths)
+            throws ODataApplicationException {
         return navigationResolver.resolveRootUriResource(resourcePaths.get(0));
-    }
-
-    protected AbstractSensorThingsEntityService<?, ?> getEntityService(UriResourceEntitySet uriResourceEntitySet) {
-        return getUriResourceEntitySet(uriResourceEntitySet.getEntityType().getName());
     }
 
     protected AbstractSensorThingsEntityService<?, ?> getUriResourceEntitySet(String type) {
         return serviceRepository.getEntityService(type);
+    }
+
+    protected AbstractSensorThingsEntityService<?, ?> getEntityService(UriResourceEntitySet uriResourceEntitySet) {
+        return getUriResourceEntitySet(uriResourceEntitySet.getEntityType().getName());
     }
 
     protected AbstractSensorThingsEntityService<?, ?> getEntityService(EntityTypes type) {
@@ -129,7 +135,8 @@ public abstract class AbstractEntityCrudRequestHandler<T extends IdEntity> {
         return entity != null ? getMapper().createEntity(entity) : null;
     }
 
-    private Entity checkId(Entity entity, UriResourceEntitySet uriResourceEntitySet) throws ODataApplicationException {
+    private Entity checkId(Entity entity, UriResourceEntitySet uriResourceEntitySet)
+            throws ODataApplicationException {
         return entity.addProperty(new Property(null, PROP_ID, ValueType.PRIMITIVE, getId(uriResourceEntitySet)));
     }
 

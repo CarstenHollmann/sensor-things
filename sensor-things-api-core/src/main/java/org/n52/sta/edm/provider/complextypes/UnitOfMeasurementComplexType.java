@@ -51,7 +51,8 @@ import org.springframework.stereotype.Component;
 public class UnitOfMeasurementComplexType implements AbstractComplexType {
 
     public static final String CT_UOM_NAME = "UnitOfMeasurement";
-    public static final FullQualifiedName CT_UOM_FQN = new FullQualifiedName(SensorThingsEdmConstants.NAMESPACE, CT_UOM_NAME);
+    public static final FullQualifiedName CT_UOM_FQN =
+            new FullQualifiedName(SensorThingsEdmConstants.NAMESPACE, CT_UOM_NAME);
     public static final String PROP_NAME = "name";
     public static final String PROP_SYMBOL = "symbol";
     public static final String PROP_DEFINITION = "definition";
@@ -62,9 +63,12 @@ public class UnitOfMeasurementComplexType implements AbstractComplexType {
         complexType.setName(CT_UOM_FQN.getFullQualifiedNameAsString());
 
         List<CsdlProperty> properties = new ArrayList();
-        properties.add(new CsdlProperty().setName(PROP_NAME).setType(EdmPrimitiveTypeKind.String.getFullQualifiedName()));
-        properties.add(new CsdlProperty().setName(PROP_SYMBOL).setType(EdmPrimitiveTypeKind.String.getFullQualifiedName()));
-        properties.add(new CsdlProperty().setName(PROP_DEFINITION).setType(EdmPrimitiveTypeKind.String.getFullQualifiedName()));
+        properties.add(new CsdlProperty().setName(PROP_NAME)
+                                         .setType(EdmPrimitiveTypeKind.String.getFullQualifiedName()));
+        properties.add(new CsdlProperty().setName(PROP_SYMBOL)
+                                         .setType(EdmPrimitiveTypeKind.String.getFullQualifiedName()));
+        properties.add(new CsdlProperty().setName(PROP_DEFINITION)
+                                         .setType(EdmPrimitiveTypeKind.String.getFullQualifiedName()));
 
         complexType.setProperties(properties);
 

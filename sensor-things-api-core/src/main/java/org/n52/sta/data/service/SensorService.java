@@ -71,7 +71,7 @@ public class SensorService extends AbstractSensorThingsEntityService<ProcedureRe
     @Autowired
     private FormatRepository formatRepository;
 
-    @Autowired(required=false)
+    @Autowired(required = false)
     private ProcedureHistoryRepository procedureHistoryRepository;
 
     @Autowired
@@ -126,7 +126,7 @@ public class SensorService extends AbstractSensorThingsEntityService<ProcedureRe
     @Override
     public boolean existsRelatedEntity(Long sourceId, EdmEntityType sourceEntityType, Long targetId) {
         switch (sourceEntityType.getFullQualifiedName().getFullQualifiedNameAsString()) {
-        case "iot.Datastream": {
+        case IOT_DATASTREAM: {
             BooleanExpression filter = sQS.withDatastream(sourceId);
             if (targetId != null) {
                 filter = filter.and(sQS.withId(targetId));
@@ -257,7 +257,7 @@ public class SensorService extends AbstractSensorThingsEntityService<ProcedureRe
                 }
                 return getRepository().save(getAsProcedureEntity(merged));
             }
-            throw new ODataApplicationException("Entity not found.",
+            throw new ODataApplicationException(ENTITY_NOT_FOUND,
                     HttpStatusCode.NOT_FOUND.getStatusCode(), Locale.ROOT);
         } else if (HttpMethod.PUT.equals(method)) {
             throw new ODataApplicationException("Http PUT is not yet supported!",
@@ -298,7 +298,7 @@ public class SensorService extends AbstractSensorThingsEntityService<ProcedureRe
             });
             getRepository().deleteById(id);
         } else {
-            throw new ODataApplicationException("Entity not found.", HttpStatusCode.NOT_FOUND.getStatusCode(),
+            throw new ODataApplicationException(ENTITY_NOT_FOUND, HttpStatusCode.NOT_FOUND.getStatusCode(),
                     Locale.ROOT);
         }
     }
@@ -339,6 +339,7 @@ public class SensorService extends AbstractSensorThingsEntityService<ProcedureRe
                 : sensor;
     }
 
+    @SuppressWarnings("unchecked")
     private AbstractSensorThingsEntityService<?, DatastreamEntity> getDatastreamService() {
         return (AbstractSensorThingsEntityService<?, DatastreamEntity>) getEntityService(
                 EntityTypes.Datastream);

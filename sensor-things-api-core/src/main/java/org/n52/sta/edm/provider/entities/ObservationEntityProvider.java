@@ -41,9 +41,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.olingo.commons.api.edm.EdmPrimitiveType;
 import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
-import org.apache.olingo.commons.api.edm.EdmTypeDefinition;
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
 import org.apache.olingo.commons.api.edm.provider.CsdlEntitySet;
 import org.apache.olingo.commons.api.edm.provider.CsdlEntityType;
@@ -59,6 +57,7 @@ import org.springframework.stereotype.Component;
  *
  */
 @Component
+@SuppressWarnings("checkstyle:avoidstaticimport")
 public class ObservationEntityProvider extends AbstractSensorThingsEntityProvider {
 
     // Entity Type Name

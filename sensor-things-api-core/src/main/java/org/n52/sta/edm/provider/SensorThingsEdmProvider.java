@@ -57,18 +57,19 @@ import org.springframework.stereotype.Component;
  * @author <a href="mailto:s.drost@52north.org">Sebastian Drost</a>
  */
 @Component
+@SuppressWarnings("checkstyle:avoidstaticimport")
 public class SensorThingsEdmProvider extends CsdlAbstractEdmProvider {
 
+    // EDM Container
+    public static final String CONTAINER_NAME = "sensorThingsEntitySets";
+    public static final FullQualifiedName CONTAINER = new FullQualifiedName(NAMESPACE, CONTAINER_NAME);
+    
     @Autowired
     private SensorThingsEntityProviderRepository entityProviderRepository;
 
     @Autowired
     private SensorThingsComplexTypeProvider complexTypeProvider;
-
-    // EDM Container
-    public static final String CONTAINER_NAME = "sensorThingsEntitySets";
-    public static final FullQualifiedName CONTAINER = new FullQualifiedName(NAMESPACE, CONTAINER_NAME);
-
+    
     @Override
     public CsdlEntityContainer getEntityContainer() throws ODataException {
 
@@ -109,8 +110,10 @@ public class SensorThingsEdmProvider extends CsdlAbstractEdmProvider {
     }
 
     @Override
-    public CsdlEntityContainerInfo getEntityContainerInfo(FullQualifiedName entityContainerName) throws ODataException {
-        // This method is invoked when displaying the Service Document at e.g. http://localhost:8080/DemoService/DemoService.svc
+    public CsdlEntityContainerInfo getEntityContainerInfo(FullQualifiedName entityContainerName)
+            throws ODataException {
+        // This method is invoked when displaying the Service Document at
+        // e.g. http://localhost:8080/DemoService/DemoService.svc
         if (entityContainerName == null || entityContainerName.equals(CONTAINER)) {
             CsdlEntityContainerInfo entityContainerInfo = new CsdlEntityContainerInfo();
             entityContainerInfo.setContainerName(CONTAINER);
@@ -121,7 +124,8 @@ public class SensorThingsEdmProvider extends CsdlAbstractEdmProvider {
     }
 
     @Override
-    public CsdlEntitySet getEntitySet(FullQualifiedName entityContainer, String entitySetName) throws ODataException {
+    public CsdlEntitySet getEntitySet(FullQualifiedName entityContainer, String entitySetName)
+            throws ODataException {
         if (entityContainer.equals(CONTAINER)) {
             return entityProviderRepository.getEntityProvider(entitySetName).getEntitySet();
         }
@@ -131,7 +135,8 @@ public class SensorThingsEdmProvider extends CsdlAbstractEdmProvider {
 
     @Override
     public CsdlEntityType getEntityType(FullQualifiedName entityTypeName) throws ODataException {
-        AbstractSensorThingsEntityProvider entityProvider = entityProviderRepository.getEntityProvider(entityTypeName);
+        AbstractSensorThingsEntityProvider entityProvider =
+                entityProviderRepository.getEntityProvider(entityTypeName);
         return entityProvider.getEntityType();
     }
 

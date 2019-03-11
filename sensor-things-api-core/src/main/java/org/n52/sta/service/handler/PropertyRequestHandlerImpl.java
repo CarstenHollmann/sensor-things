@@ -78,27 +78,30 @@ public class PropertyRequestHandlerImpl extends AbstractPropertyRequestHandler<S
         // e.g. the case: sta/Things(id)/Locations(id)/name
         if (resourcePaths.get(1) instanceof UriResourceNavigation) {
             response = resolvePropertyForNavigation(resourcePaths);
-
-            // e.g the case: sta/Things(id)/description
         } else {
+            // e.g the case: sta/Things(id)/description
             response = resolveSimplePropertyRequest(resourcePaths);
 
         }
         return response;
     }
 
-    private PropertyResponse resolveSimplePropertyRequest(List<UriResource> resourcePaths) throws ODataApplicationException {
+    private PropertyResponse resolveSimplePropertyRequest(List<UriResource> resourcePaths)
+            throws ODataApplicationException {
         // determine the response EntitySet
         UriResourceEntitySet uriResourceEntitySet = navigationResolver.resolveRootUriResource(resourcePaths.get(0));
         Entity targetEntity = navigationResolver.resolveSimpleEntityRequest(uriResourceEntitySet);
         List<UriResource> propertyResourcePaths = resourcePaths.subList(1, resourcePaths.size());
 
-        PropertyResponse response = resolveProperty(targetEntity, propertyResourcePaths, uriResourceEntitySet.getEntitySet());
+        PropertyResponse response = resolveProperty(targetEntity,
+                                                    propertyResourcePaths,
+                                                    uriResourceEntitySet.getEntitySet());
 
         return response;
     }
 
-    private PropertyResponse resolvePropertyForNavigation(List<UriResource> resourcePaths) throws ODataApplicationException {
+    private PropertyResponse resolvePropertyForNavigation(List<UriResource> resourcePaths)
+            throws ODataApplicationException {
         int i = 0;
         UriResource lastEntitySegment = resourcePaths.get(i);
         // note that the last value for i at the end of the loop is the index
@@ -107,16 +110,22 @@ public class PropertyRequestHandlerImpl extends AbstractPropertyRequestHandler<S
             lastEntitySegment = resourcePaths.get(i);
         }
         // determine the target query parameters and fetch Entity for it
-        EntityQueryParams queryParams = navigationResolver.resolveUriResourceNavigationPaths(resourcePaths.subList(0, i));
+        EntityQueryParams queryParams = navigationResolver
+                .resolveUriResourceNavigationPaths(resourcePaths.subList(0, i));
         Entity targetEntity = navigationResolver.resolveComplexEntityRequest(lastEntitySegment, queryParams);
 
         PropertyResponse response = null;
 
-        response = resolveProperty(targetEntity, resourcePaths.subList(i, resourcePaths.size()), queryParams.getTargetEntitySet());
+        response = resolveProperty(targetEntity, resourcePaths.subList(i,
+                                                                       resourcePaths.size()),
+                                                                       queryParams.getTargetEntitySet());
         return response;
     }
 
-    private PropertyResponse resolveProperty(Entity targetEntity, List<UriResource> resourcePaths, EdmEntitySet targetEntitySet) throws ODataApplicationException {
+    private PropertyResponse resolveProperty(Entity targetEntity,
+                                             List<UriResource> resourcePaths,
+                                             EdmEntitySet targetEntitySet)
+            throws ODataApplicationException {
         int i = 0;
         EdmProperty edmProperty = ((UriResourceProperty) resourcePaths.get(i)).getProperty();
 

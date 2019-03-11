@@ -37,6 +37,7 @@ package org.n52.sta.edm.provider;
  *
  * @author <a href="mailto:s.drost@52north.org">Sebastian Drost</a>
  */
+@SuppressWarnings("checkstyle:avoidstaticimport")
 public class SensorThingsEdmConstants {
 
     public static final String NAMESPACE = "iot";

@@ -76,17 +76,7 @@ public class LocationService extends AbstractSensorThingsEntityService<LocationR
     @Autowired
     private LocationEncodingRepository locationEncodingRepository;
 
-    @Autowired
-    private HistoricalLocationRepository historicalLocationRepository;
-
-    @Autowired
-    private ThingRepository thingRepository;
-
-    private final static LocationQuerySpecifications lQS= new LocationQuerySpecifications();
-
-    private HistoricalLocationQuerySpecifications hlQS = new HistoricalLocationQuerySpecifications();
-
-    private final static ThingQuerySpecifications tQS = new ThingQuerySpecifications();
+    private LocationQuerySpecifications lQS= new LocationQuerySpecifications();
 
     public LocationService(LocationRepository repository, LocationMapper mapper) {
         super(repository);
@@ -102,7 +92,8 @@ public class LocationService extends AbstractSensorThingsEntityService<LocationR
     public EntityCollection getEntityCollection(QueryOptions queryOptions) throws ODataApplicationException {
         EntityCollection retEntitySet = new EntityCollection();
         Predicate filter = getFilterPredicate(LocationEntity.class, queryOptions);
-        getRepository().findAll(filter, createPageableRequest(queryOptions)).forEach(t -> retEntitySet.getEntities().add(mapper.createEntity(t)));
+        getRepository().findAll(filter, createPageableRequest(queryOptions))
+                                        .forEach(t -> retEntitySet.getEntities().add(mapper.createEntity(t)));
         return retEntitySet;
     }
 
@@ -113,7 +104,10 @@ public class LocationService extends AbstractSensorThingsEntityService<LocationR
     }
 
     @Override
-    public EntityCollection getRelatedEntityCollection(Long sourceId, EdmEntityType sourceEntityType, QueryOptions queryOptions) throws ODataApplicationException {
+    public EntityCollection getRelatedEntityCollection(Long sourceId,
+                                                       EdmEntityType sourceEntityType,
+                                                       QueryOptions queryOptions)
+                            throws ODataApplicationException {
         BooleanExpression filter = getFilter(sourceId, sourceEntityType);
         filter = filter.and(getFilterPredicate(LocationEntity.class, queryOptions));
 
@@ -132,11 +126,11 @@ public class LocationService extends AbstractSensorThingsEntityService<LocationR
     private BooleanExpression getFilter(Long sourceId, EdmEntityType sourceEntityType) {
         BooleanExpression filter;
         switch (sourceEntityType.getFullQualifiedName().getFullQualifiedNameAsString()) {
-        case "iot.HistoricalLocation": {
+        case IOT_HISTORICALLOCATION: {
             filter = lQS.withRelatedHistoricalLocation(sourceId);
             break;
         }
-        case "iot.Thing": {
+        case IOT_THING: {
             filter = lQS.withRelatedThing(sourceId);
             break;
         }
@@ -160,11 +154,11 @@ public class LocationService extends AbstractSensorThingsEntityService<LocationR
     public boolean existsRelatedEntity(Long sourceId, EdmEntityType sourceEntityType, Long targetId) {
         BooleanExpression filter;
         switch(sourceEntityType.getFullQualifiedName().getFullQualifiedNameAsString()) {
-        case "iot.Thing": {
+        case IOT_THING: {
             filter = lQS.withRelatedThing(sourceId);
             break;
         }
-        case "iot.HistoricalLocation": {
+        case IOT_HISTORICALLOCATION: {
             filter = lQS.withRelatedHistoricalLocation(sourceId);
             break;
         }
@@ -215,7 +209,9 @@ public class LocationService extends AbstractSensorThingsEntityService<LocationR
      * @param targetId Id of the Thing to be retrieved
      * @return Optional<ThingEntity> Requested Entity
      */
-    private Optional<LocationEntity> getRelatedEntityRaw(Long sourceId, EdmEntityType sourceEntityType, Long targetId) {
+    private Optional<LocationEntity> getRelatedEntityRaw(Long sourceId,
+                                                         EdmEntityType sourceEntityType,
+                                                         Long targetId) {
         BooleanExpression filter;
         switch(sourceEntityType.getFullQualifiedName().getFullQualifiedNameAsString()) {
         case "iot.HistoricalLocation": {
@@ -276,7 +272,7 @@ public class LocationService extends AbstractSensorThingsEntityService<LocationR
                 LocationEntity merged = mapper.merge(existing.get(), entity);
                 return getRepository().save(merged);
             }
-            throw new ODataApplicationException("Entity not found.",
+            throw new ODataApplicationException(ENTITY_NOT_FOUND,
                     HttpStatusCode.NOT_FOUND.getStatusCode(), Locale.ROOT);
         } else if (HttpMethod.PUT.equals(method)) {
             throw new ODataApplicationException("Http PUT is not yet supported!",
@@ -310,7 +306,7 @@ public class LocationService extends AbstractSensorThingsEntityService<LocationR
             }
             getRepository().deleteById(id);
         } else {
-            throw new ODataApplicationException("Entity not found.", HttpStatusCode.NOT_FOUND.getStatusCode(),
+            throw new ODataApplicationException(ENTITY_NOT_FOUND, HttpStatusCode.NOT_FOUND.getStatusCode(),
                     Locale.ROOT);
         }
     }
@@ -342,13 +338,16 @@ public class LocationService extends AbstractSensorThingsEntityService<LocationR
 
     private LocationEncodingEntity createLocationEncoding(LocationEncodingEntity locationEncoding) {
         ExampleMatcher createEncodingTypeMatcher = createEncodingTypeMatcher();
-        if (!locationEncodingRepository.exists(createEncodingTypeExample(locationEncoding, createEncodingTypeMatcher))) {
+        if (!locationEncodingRepository
+                .exists(createEncodingTypeExample(locationEncoding, createEncodingTypeMatcher))) {
             return locationEncodingRepository.save(locationEncoding);
         }
-        return locationEncodingRepository.findOne(createEncodingTypeExample(locationEncoding, createEncodingTypeMatcher)).get();
+        return locationEncodingRepository
+                .findOne(createEncodingTypeExample(locationEncoding, createEncodingTypeMatcher)).get();
     }
 
-    private Example<LocationEncodingEntity> createEncodingTypeExample(LocationEncodingEntity locationEncoding, ExampleMatcher matcher) {
+    private Example<LocationEncodingEntity> createEncodingTypeExample(LocationEncodingEntity locationEncoding,
+                                                                      ExampleMatcher matcher) {
         return Example.<LocationEncodingEntity>of(locationEncoding, matcher);
     }
 
@@ -368,10 +367,12 @@ public class LocationService extends AbstractSensorThingsEntityService<LocationR
         }
     }
 
+    @SuppressWarnings("unchecked")
     private AbstractSensorThingsEntityService<?, ThingEntity> getThingService() {
         return (AbstractSensorThingsEntityService<?, ThingEntity>) getEntityService(EntityTypes.Thing);
     }
 
+    @SuppressWarnings("unchecked")
     private AbstractSensorThingsEntityService<?, HistoricalLocationEntity> getHistoricalLocationService() {
         return (AbstractSensorThingsEntityService<?, HistoricalLocationEntity>) getEntityService(EntityTypes.HistoricalLocation);
     }

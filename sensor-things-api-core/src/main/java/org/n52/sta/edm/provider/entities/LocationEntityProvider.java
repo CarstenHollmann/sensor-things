@@ -54,6 +54,7 @@ import org.springframework.stereotype.Component;
  * @author <a href="mailto:s.drost@52north.org">Sebastian Drost</a>
  */
 @Component
+@SuppressWarnings("checkstyle:avoidstaticimport")
 public class LocationEntityProvider extends AbstractSensorThingsEntityProvider {
 
     // Entity Type Name

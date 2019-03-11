@@ -63,6 +63,7 @@ import org.springframework.stereotype.Component;
  * @author <a href="mailto:j.speckamp@52north.org">Jan Speckamp</a>
  */
 @Component
+@SuppressWarnings("checkstyle:avoidstaticimport")
 public class DatastreamEntityProvider extends AbstractSensorThingsEntityProvider {
 
     // Entity Type Name
@@ -99,8 +100,10 @@ public class DatastreamEntityProvider extends AbstractSensorThingsEntityProvider
         entitySet.setType(ET_DATASTREAM_FQN);
 
         CsdlNavigationPropertyBinding navPropThingBinding = new CsdlNavigationPropertyBinding();
-        navPropThingBinding.setPath(ET_THING_NAME); // the path from entity type to navigation property
-        navPropThingBinding.setTarget(ES_THINGS_NAME); //target entitySet, where the nav prop points to
+        // the path from entity type to navigation property
+        navPropThingBinding.setPath(ET_THING_NAME);
+        //target entitySet, where the nav prop points to
+        navPropThingBinding.setTarget(ES_THINGS_NAME);
 
         CsdlNavigationPropertyBinding navPropSensorBinding = new CsdlNavigationPropertyBinding();
         navPropSensorBinding.setPath(ET_SENSOR_NAME);

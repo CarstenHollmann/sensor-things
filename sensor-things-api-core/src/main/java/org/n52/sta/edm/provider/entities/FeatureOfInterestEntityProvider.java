@@ -52,11 +52,13 @@ import org.springframework.stereotype.Component;
  *
  */
 @Component
+@SuppressWarnings("checkstyle:avoidstaticimport")
 public class FeatureOfInterestEntityProvider extends AbstractSensorThingsEntityProvider {
 
     // Entity Type Name
     public static final String ET_FEATURE_OF_INTEREST_NAME = "FeatureOfInterest";
-    public static final FullQualifiedName ET_FEATURE_OF_INTEREST_FQN = new FullQualifiedName(NAMESPACE, ET_FEATURE_OF_INTEREST_NAME);
+    public static final FullQualifiedName ET_FEATURE_OF_INTEREST_FQN =
+            new FullQualifiedName(NAMESPACE, ET_FEATURE_OF_INTEREST_NAME);
 
     // Entity Set Name
     public static final String ES_FEATURES_OF_INTEREST_NAME = "FeaturesOfInterest";

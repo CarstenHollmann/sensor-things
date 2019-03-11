@@ -60,16 +60,21 @@ import com.querydsl.core.types.dsl.BooleanExpression;
  *
  */
 @Component
-public class ObservedPropertyService extends AbstractSensorThingsEntityService<PhenomenonRepository, PhenomenonEntity> {
+public class ObservedPropertyService
+        extends AbstractSensorThingsEntityService<PhenomenonRepository, PhenomenonEntity> {
 
     private ObservedPropertyMapper mapper;
 
     @Autowired
     private DatastreamRepository datastreamRepository;
 
-    private final static ObservedPropertyQuerySpecifications oQS = new ObservedPropertyQuerySpecifications();
+    private ObservedPropertyQuerySpecifications oQS = new ObservedPropertyQuerySpecifications();
 
-    private final static DatastreamQuerySpecifications dQS = new DatastreamQuerySpecifications();
+    private DatastreamQuerySpecifications dQS = new DatastreamQuerySpecifications();
+    
+    private final String IOT_DATASTREAM = "iot.Datastream";
+    
+    private final String NOT_FOUND = "Entity not found.";
 
     public ObservedPropertyService(PhenomenonRepository repository, ObservedPropertyMapper mapper) {
         super(repository);
@@ -85,7 +90,8 @@ public class ObservedPropertyService extends AbstractSensorThingsEntityService<P
     public EntityCollection getEntityCollection(QueryOptions queryOptions) throws ODataApplicationException {
         EntityCollection retEntitySet = new EntityCollection();
         Predicate filter = getFilterPredicate(PhenomenonEntity.class, queryOptions);
-        getRepository().findAll(filter, createPageableRequest(queryOptions)).forEach(t -> retEntitySet.getEntities().add(mapper.createEntity(t)));
+        getRepository().findAll(filter, createPageableRequest(queryOptions))
+                                        .forEach(t -> retEntitySet.getEntities().add(mapper.createEntity(t)));
         return retEntitySet;
     }
 
@@ -96,7 +102,9 @@ public class ObservedPropertyService extends AbstractSensorThingsEntityService<P
     }
 
     @Override
-    public EntityCollection getRelatedEntityCollection(Long sourceId, EdmEntityType sourceEntityType, QueryOptions queryOptions) {
+    public EntityCollection getRelatedEntityCollection(Long sourceId,
+                                                       EdmEntityType sourceEntityType,
+                                                       QueryOptions queryOptions) {
         return null;
     }
 
@@ -112,8 +120,8 @@ public class ObservedPropertyService extends AbstractSensorThingsEntityService<P
 
     @Override
     public boolean existsRelatedEntity(Long sourceId, EdmEntityType sourceEntityType, Long targetId) {
-        switch(sourceEntityType.getFullQualifiedName().getFullQualifiedNameAsString()) {
-        case "iot.Datastream": {
+        switch (sourceEntityType.getFullQualifiedName().getFullQualifiedNameAsString()) {
+        case IOT_DATASTREAM: {
             BooleanExpression filter = oQS.withDatastream(sourceId);
             if (targetId != null) {
                 filter = filter.and(oQS.withId(targetId));
@@ -171,12 +179,14 @@ public class ObservedPropertyService extends AbstractSensorThingsEntityService<P
      * @param sourceId Id of the Source Entity
      * @param sourceEntityType Type of the Source Entity
      * @param targetId Id of the Entity to be retrieved
-     * @return Optional<PhenomenonEntity> Requested Entity
+     * @return Optional&lt;PhenomenonEntity&gt; Requested Entity
      */
-    private Optional<PhenomenonEntity> getRelatedEntityRaw(Long sourceId, EdmEntityType sourceEntityType, Long targetId) {
+    private Optional<PhenomenonEntity> getRelatedEntityRaw(Long sourceId,
+                                                           EdmEntityType sourceEntityType,
+                                                           Long targetId) {
         BooleanExpression filter;
-        switch(sourceEntityType.getFullQualifiedName().getFullQualifiedNameAsString()) {
-        case "iot.Datastream": {
+        switch (sourceEntityType.getFullQualifiedName().getFullQualifiedNameAsString()) {
+        case IOT_DATASTREAM: {
             filter = oQS.withDatastream(sourceId);
             break;
         }
@@ -226,7 +236,7 @@ public class ObservedPropertyService extends AbstractSensorThingsEntityService<P
                 PhenomenonEntity merged = mapper.merge(existing.get(), entity);
                 return getRepository().save(getAsPhenomenonEntity(merged));
             }
-            throw new ODataApplicationException("Entity not found.",
+            throw new ODataApplicationException(NOT_FOUND,
                     HttpStatusCode.NOT_FOUND.getStatusCode(), Locale.ROOT);
         } else if (HttpMethod.PUT.equals(method)) {
             throw new ODataApplicationException("Http PUT is not yet supported!",
@@ -266,7 +276,7 @@ public class ObservedPropertyService extends AbstractSensorThingsEntityService<P
             });
             getRepository().deleteById(id);
         } else {
-            throw new ODataApplicationException("Entity not found.", HttpStatusCode.NOT_FOUND.getStatusCode(),
+            throw new ODataApplicationException(NOT_FOUND, HttpStatusCode.NOT_FOUND.getStatusCode(),
                     Locale.ROOT);
         }
     }
@@ -282,6 +292,7 @@ public class ObservedPropertyService extends AbstractSensorThingsEntityService<P
                 : observableProperty;
     }
 
+    @SuppressWarnings("unchecked")
     private AbstractSensorThingsEntityService<?, DatastreamEntity> getDatastreamService() {
         return (AbstractSensorThingsEntityService<?, DatastreamEntity>) getEntityService(
                 EntityTypes.Datastream);

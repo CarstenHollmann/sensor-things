@@ -37,9 +37,6 @@ import java.util.Set;
 import org.apache.olingo.commons.api.data.Entity;
 import org.apache.olingo.commons.api.data.EntityCollection;
 import org.apache.olingo.commons.api.edm.EdmEntityType;
-import org.apache.olingo.server.api.ODataApplicationException;
-import org.n52.series.db.beans.AbstractFeatureEntity;
-import org.n52.series.db.beans.ProcedureEntity;
 import org.apache.olingo.commons.api.http.HttpMethod;
 import org.apache.olingo.commons.api.http.HttpStatusCode;
 import org.apache.olingo.server.api.ODataApplicationException;
@@ -49,7 +46,6 @@ import org.n52.series.db.beans.sta.ThingEntity;
 import org.n52.sta.data.query.HistoricalLocationQuerySpecifications;
 import org.n52.sta.data.repositories.HistoricalLocationRepository;
 import org.n52.sta.data.repositories.LocationRepository;
-import org.n52.sta.data.repositories.ThingRepository;
 import org.n52.sta.data.service.EntityServiceRepository.EntityTypes;
 import org.n52.sta.mapping.HistoricalLocationMapper;
 import org.n52.sta.service.query.QueryOptions;
@@ -64,12 +60,10 @@ import com.querydsl.core.types.dsl.BooleanExpression;
  *
  */
 @Component
-public class HistoricalLocationService extends AbstractSensorThingsEntityService<HistoricalLocationRepository, HistoricalLocationEntity> {
+public class HistoricalLocationService
+        extends AbstractSensorThingsEntityService<HistoricalLocationRepository, HistoricalLocationEntity> {
 
     private HistoricalLocationMapper mapper;
-
-    @Autowired
-    private ThingRepository thingRepository;
 
     @Autowired
     private LocationRepository locationRepository;
@@ -91,7 +85,8 @@ public class HistoricalLocationService extends AbstractSensorThingsEntityService
         EntityCollection retEntitySet = new EntityCollection();
         Predicate filter = getFilterPredicate(HistoricalLocationEntity.class, queryOptions);
 
-        getRepository().findAll(filter, createPageableRequest(queryOptions)).forEach(t -> retEntitySet.getEntities().add(mapper.createEntity(t)));
+        getRepository().findAll(filter, createPageableRequest(queryOptions))
+                                        .forEach(t -> retEntitySet.getEntities().add(mapper.createEntity(t)));
         return retEntitySet;
     }
 
@@ -102,11 +97,15 @@ public class HistoricalLocationService extends AbstractSensorThingsEntityService
     }
 
     @Override
-    public EntityCollection getRelatedEntityCollection(Long sourceId, EdmEntityType sourceEntityType, QueryOptions queryOptions) throws ODataApplicationException {
+    public EntityCollection getRelatedEntityCollection(Long sourceId,
+                                                       EdmEntityType sourceEntityType,
+                                                       QueryOptions queryOptions)
+                            throws ODataApplicationException {
         BooleanExpression filter = getFilter(sourceId, sourceEntityType);
         filter = filter.and(getFilterPredicate(HistoricalLocationEntity.class, queryOptions));
 
-        Iterable<HistoricalLocationEntity> locations = getRepository().findAll(filter, createPageableRequest(queryOptions));
+        Iterable<HistoricalLocationEntity> locations = getRepository().findAll(filter,
+                                                                               createPageableRequest(queryOptions));
         EntityCollection retEntitySet = new EntityCollection();
         locations.forEach(t -> retEntitySet.getEntities().add(mapper.createEntity(t)));
         return retEntitySet;
@@ -121,11 +120,11 @@ public class HistoricalLocationService extends AbstractSensorThingsEntityService
     public BooleanExpression getFilter(Long sourceId, EdmEntityType sourceEntityType) {
         BooleanExpression filter;
         switch (sourceEntityType.getFullQualifiedName().getFullQualifiedNameAsString()) {
-        case "iot.Location": {
+        case IOT_LOCATION: {
             filter = hlQS.withRelatedLocation(sourceId);
             break;
         }
-        case "iot.Thing": {
+        case IOT_THING: {
             filter = hlQS.withRelatedThing(sourceId);
             break;
         }
@@ -148,12 +147,12 @@ public class HistoricalLocationService extends AbstractSensorThingsEntityService
     @Override
     public boolean existsRelatedEntity(Long sourceId, EdmEntityType sourceEntityType, Long targetId) {
         BooleanExpression filter;
-        switch(sourceEntityType.getFullQualifiedName().getFullQualifiedNameAsString()) {
-        case "iot.Location": {
+        switch (sourceEntityType.getFullQualifiedName().getFullQualifiedNameAsString()) {
+        case IOT_LOCATION: {
             filter = hlQS.withRelatedLocation(sourceId);
             break;
         }
-        case "iot.Thing": {
+        case IOT_THING: {
             filter = hlQS.withRelatedThing(sourceId);
             break;
         }
@@ -173,7 +172,8 @@ public class HistoricalLocationService extends AbstractSensorThingsEntityService
 
     @Override
     public OptionalLong getIdForRelatedEntity(Long sourceId, EdmEntityType sourceEntityType, Long targetId) {
-        Optional<HistoricalLocationEntity> historicalLocation = this.getRelatedEntityRaw(sourceId, sourceEntityType, targetId);
+        Optional<HistoricalLocationEntity> historicalLocation =
+                this.getRelatedEntityRaw(sourceId, sourceEntityType, targetId);
         if (historicalLocation.isPresent()) {
             return OptionalLong.of(historicalLocation.get().getId());
         } else {
@@ -205,9 +205,11 @@ public class HistoricalLocationService extends AbstractSensorThingsEntityService
      * @param targetId Id of the Thing to be retrieved
      * @return Optional<HistoricalLocationEntity> Requested Entity
      */
-    private Optional<HistoricalLocationEntity> getRelatedEntityRaw(Long sourceId, EdmEntityType sourceEntityType, Long targetId) {
+    private Optional<HistoricalLocationEntity> getRelatedEntityRaw(Long sourceId,
+                                                                   EdmEntityType sourceEntityType,
+                                                                   Long targetId) {
         BooleanExpression filter;
-        switch(sourceEntityType.getFullQualifiedName().getFullQualifiedNameAsString()) {
+        switch (sourceEntityType.getFullQualifiedName().getFullQualifiedNameAsString()) {
         case "iot.Location": {
             filter = hlQS.withRelatedLocation(sourceId);
             break;
@@ -241,7 +243,8 @@ public class HistoricalLocationService extends AbstractSensorThingsEntityService
     }
 
     @Override
-    public HistoricalLocationEntity create(HistoricalLocationEntity historicalLocation) throws ODataApplicationException {
+    public HistoricalLocationEntity create(HistoricalLocationEntity historicalLocation)
+            throws ODataApplicationException {
         if (!historicalLocation.isProcesssed()) {
             check(historicalLocation);
             HistoricalLocationEntity created = processThing(historicalLocation);
@@ -258,7 +261,8 @@ public class HistoricalLocationService extends AbstractSensorThingsEntityService
         }
     }
 
-    private HistoricalLocationEntity processThing(HistoricalLocationEntity historicalLocation) throws ODataApplicationException {
+    private HistoricalLocationEntity processThing(HistoricalLocationEntity historicalLocation)
+            throws ODataApplicationException {
         ThingEntity thing = getThingService().createOrUpdate(historicalLocation.getThingEntity());
         historicalLocation.setThingEntity(thing);
         HistoricalLocationEntity created = getRepository().save(historicalLocation);
@@ -267,7 +271,8 @@ public class HistoricalLocationService extends AbstractSensorThingsEntityService
         return created.setLocationEntities(historicalLocation.getLocationEntities());
     }
 
-    private void processLocations(HistoricalLocationEntity historicalLocation) throws ODataApplicationException {
+    private void processLocations(HistoricalLocationEntity historicalLocation)
+            throws ODataApplicationException {
         Set<LocationEntity> locations = new LinkedHashSet<>();
         for (LocationEntity l : historicalLocation.getLocationEntities()) {
             LocationEntity location = locationRepository.getOne(l.getId());
@@ -278,14 +283,15 @@ public class HistoricalLocationService extends AbstractSensorThingsEntityService
     }
 
     @Override
-    public HistoricalLocationEntity update(HistoricalLocationEntity entity, HttpMethod method) throws ODataApplicationException {
+    public HistoricalLocationEntity update(HistoricalLocationEntity entity, HttpMethod method) 
+            throws ODataApplicationException {
         if (HttpMethod.PATCH.equals(method)) {
             Optional<HistoricalLocationEntity> existing = getRepository().findOne(hlQS.withId(entity.getId()));
             if (existing.isPresent()) {
                 HistoricalLocationEntity merged = mapper.merge(existing.get(), entity);
                 return getRepository().save(merged);
             }
-            throw new ODataApplicationException("Entity not found.",
+            throw new ODataApplicationException(ENTITY_NOT_FOUND,
                     HttpStatusCode.NOT_FOUND.getStatusCode(), Locale.ROOT);
         } else if (HttpMethod.PUT.equals(method)) {
             throw new ODataApplicationException("Http PUT is not yet supported!",
@@ -308,7 +314,7 @@ public class HistoricalLocationService extends AbstractSensorThingsEntityService
             updateThing(historicalLocation);
             getRepository().deleteById(id);
         } else {
-            throw new ODataApplicationException("Entity not found.", HttpStatusCode.NOT_FOUND.getStatusCode(),
+            throw new ODataApplicationException(ENTITY_NOT_FOUND, HttpStatusCode.NOT_FOUND.getStatusCode(),
                     Locale.ROOT);
         }
     }
@@ -340,10 +346,12 @@ public class HistoricalLocationService extends AbstractSensorThingsEntityService
         getThingService().update(historicalLocation.getThingEntity().setHistoricalLocationEntities(null));
     }
 
+    @SuppressWarnings("unchecked")
     private AbstractSensorThingsEntityService<?, ThingEntity> getThingService() {
         return (AbstractSensorThingsEntityService<?, ThingEntity>) getEntityService(EntityTypes.Thing);
     }
 
+    @SuppressWarnings("unchecked")
     private AbstractSensorThingsEntityService<?, LocationEntity> getLocationService() {
         return (AbstractSensorThingsEntityService<?, LocationEntity>) getEntityService(EntityTypes.Location);
     }

@@ -36,11 +36,7 @@ package org.n52.sta.service.query;
 
 import static org.n52.sta.edm.provider.entities.AbstractSensorThingsEntityProvider.PROP_ID;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.olingo.commons.api.data.Entity;
 import org.apache.olingo.commons.api.data.EntityCollection;
@@ -55,12 +51,9 @@ import org.apache.olingo.server.api.uri.UriResourceNavigation;
 import org.apache.olingo.server.api.uri.queryoption.ExpandItem;
 import org.apache.olingo.server.api.uri.queryoption.ExpandOption;
 import org.apache.olingo.server.api.uri.queryoption.SelectOption;
-import org.apache.olingo.server.core.uri.queryoption.ExpandItemImpl;
-import org.apache.olingo.server.core.uri.queryoption.ExpandOptionImpl;
 import org.n52.sta.data.service.AbstractSensorThingsEntityService;
 import org.n52.sta.data.service.EntityServiceRepository;
 import org.n52.sta.utils.EntityAnnotator;
-import org.n52.sta.utils.EntityCreationHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -70,18 +63,16 @@ import org.springframework.stereotype.Component;
  * @author <a href="mailto:s.drost@52north.org">Sebastian Drost</a>
  */
 @Component
+@SuppressWarnings("checkstyle:avoidstaticimport")
 public class QueryOptionsHandler {
+
+    protected UriHelper uriHelper;
 
     @Autowired
     private EntityServiceRepository serviceRepository;
 
     @Autowired
-    EntityCreationHelper entityCreationHelper;
-
-    @Autowired
-    EntityAnnotator entityAnnotator;
-
-    protected UriHelper uriHelper;
+    private EntityAnnotator entityAnnotator;
 
     public UriHelper getUriHelper() {
         return uriHelper;
@@ -104,7 +95,7 @@ public class QueryOptionsHandler {
     public String getSelectListFromSelectOption(EdmEntityType edmEntityType,
                                                 ExpandOption expandOption,
                                                 SelectOption selectOption)
-            throws SerializerException {
+                                                        throws SerializerException {
         String selectList = uriHelper.buildContextURLSelectList(edmEntityType,
                                                                 expandOption,
                                                                 selectOption);
@@ -126,11 +117,12 @@ public class QueryOptionsHandler {
      * @param baseURI
      *        baseURI of the Request
      */
+    @SuppressWarnings("checkstyle:emptycatchblock")
     public void handleExpandOption(Entity entity,
-                                    ExpandOption expandOption,
-                                    Long sourceId,
-                                    EdmEntityType sourceEdmEntityType,
-                                    String baseURI) {
+                                   ExpandOption expandOption,
+                                   Long sourceId,
+                                   EdmEntityType sourceEdmEntityType,
+                                   String baseURI) {
         List<ExpandItem> minimized = expandOption.getExpandItems();
         minimized.forEach(expandItem -> {
             EdmNavigationProperty edmNavigationProperty = null;
@@ -154,12 +146,12 @@ public class QueryOptionsHandler {
             // Either add inline Collection or add single inline Entity
             if (sourceEdmEntityType.getNavigationProperty(targetTitle).isCollection()) {
                 try {
-                    link.setInlineEntitySet(getInlineEntityCollection(sourceId,
-                                                                      sourceEdmEntityType,
-                                                                      targetEdmEntityType,
-                                                                      new ExpandItemQueryOptions(expandItem, baseURI)));
-                } catch (ODataApplicationException e) {}
-
+                    link.setInlineEntitySet(
+                                        getInlineEntityCollection(sourceId,
+                                                                  sourceEdmEntityType,
+                                                                  targetEdmEntityType,
+                                                                  new ExpandItemQueryOptions(expandItem, baseURI)));
+                } catch (ODataApplicationException e) { }
             } else {
                 link.setInlineEntity(getInlineEntity(sourceId,
                                                      sourceEdmEntityType,
@@ -173,7 +165,8 @@ public class QueryOptionsHandler {
                                    EdmEntityType sourceType,
                                    EdmEntityType targetType,
                                    QueryOptions queryOptions) {
-        AbstractSensorThingsEntityService< ? , ? > responseService = serviceRepository.getEntityService(targetType.getName());
+        AbstractSensorThingsEntityService< ? , ? > responseService = serviceRepository
+                .getEntityService(targetType.getName());
         Entity entity = responseService.getRelatedEntity(sourceId, sourceType);
 
         if (queryOptions.hasExpandOption()) {
@@ -201,8 +194,9 @@ public class QueryOptionsHandler {
                                                        EdmEntityType sourceType,
                                                        EdmEntityType targetType,
                                                        QueryOptions queryOptions)
-            throws ODataApplicationException {
-        AbstractSensorThingsEntityService< ? , ? > responseService = serviceRepository.getEntityService(targetType.getName());
+                                                               throws ODataApplicationException {
+        AbstractSensorThingsEntityService< ? , ? > responseService = serviceRepository
+                .getEntityService(targetType.getName());
         EntityCollection entityCollection = responseService.getRelatedEntityCollection(sourceId,
                                                                                        sourceType,
                                                                                        queryOptions);

@@ -85,7 +85,7 @@ public class FeatureOfInterestService
     @Autowired
     private DatastreamRepository datastreamRepository;
 
-    private final static FeatureOfInterestQuerySpecifications foiQS = new FeatureOfInterestQuerySpecifications();
+    private FeatureOfInterestQuerySpecifications foiQS = new FeatureOfInterestQuerySpecifications();
 
     private ObservationQuerySpecifications oQS = new ObservationQuerySpecifications();
 
@@ -137,7 +137,7 @@ public class FeatureOfInterestService
     @Override
     public boolean existsRelatedEntity(Long sourceId, EdmEntityType sourceEntityType, Long targetId) {
         switch (sourceEntityType.getFullQualifiedName().getFullQualifiedNameAsString()) {
-        case "iot.Observation": {
+        case IOT_OBSERVATION: {
             BooleanExpression filter = foiQS.withObservation(sourceId);
             if (targetId != null) {
                 filter = filter.and(foiQS.withId(targetId));
@@ -190,13 +190,13 @@ public class FeatureOfInterestService
      *            Type of the Source Entity
      * @param targetId
      *            Id of the Entity to be retrieved
-     * @return Optional<FeatureEntity> Requested Entity
+     * @return Optional&lt;FeatureEntity&gt; Requested Entity
      */
     private Optional<AbstractFeatureEntity<?>> getRelatedEntityRaw(Long sourceId, EdmEntityType sourceEntityType,
             Long targetId) {
         BooleanExpression filter;
         switch (sourceEntityType.getFullQualifiedName().getFullQualifiedNameAsString()) {
-        case "iot.Observation": {
+        case IOT_OBSERVATION: {
             filter = foiQS.withObservation(sourceId);
             break;
         }
@@ -273,7 +273,7 @@ public class FeatureOfInterestService
                 AbstractFeatureEntity<?> merged = mapper.merge(existing.get(), entity);
                 return getRepository().save(merged);
             }
-            throw new ODataApplicationException("Entity not found.", HttpStatusCode.NOT_FOUND.getStatusCode(),
+            throw new ODataApplicationException(ENTITY_NOT_FOUND, HttpStatusCode.NOT_FOUND.getStatusCode(),
                     Locale.ROOT);
         } else if (HttpMethod.PUT.equals(method)) {
             throw new ODataApplicationException("Http PUT is not yet supported!",
@@ -295,7 +295,7 @@ public class FeatureOfInterestService
             deleteRelatedObservationsAndUpdateDatasets(id);
             getRepository().deleteById(id);
         } else {
-            throw new ODataApplicationException("Entity not found.", HttpStatusCode.NOT_FOUND.getStatusCode(),
+            throw new ODataApplicationException(ENTITY_NOT_FOUND, HttpStatusCode.NOT_FOUND.getStatusCode(),
                     Locale.ROOT);
         }
     }
@@ -354,6 +354,7 @@ public class FeatureOfInterestService
         feature.setIdentifier(JavaHelper.generateID(feature.getIdentifier()));
     }
 
+    @SuppressWarnings("unchecked")
     private AbstractSensorThingsEntityService<?, DatastreamEntity> getDatastreamService() {
         return (AbstractSensorThingsEntityService<?, DatastreamEntity>) getEntityService(
                 EntityTypes.Datastream);

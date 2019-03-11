@@ -97,6 +97,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+//CHECKSTYLE:OFF
 public class SensorThingsDeserializer implements ODataDeserializer {
 
     private static final Map<String, Class<? extends Geospatial>> jsonNameToGeoDataType;
@@ -1061,3 +1062,4 @@ public class SensorThingsDeserializer implements ODataDeserializer {
                         || isAssignable(edmStructuredType, edmStructuredTypeToAssign.getBaseType()));
     }
 }
+//CHECKSTYLE:ON

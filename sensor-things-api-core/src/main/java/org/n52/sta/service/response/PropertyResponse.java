@@ -46,6 +46,8 @@ public class PropertyResponse {
     private Property property;
 
     private EdmType edmPropertyType;
+    
+    private EdmEntitySet responseEdmEntitySet;
 
     public Property getProperty() {
         return property;
@@ -70,7 +72,4 @@ public class PropertyResponse {
     public void setResponseEdmEntitySet(EdmEntitySet responseEdmEntitySet) {
         this.responseEdmEntitySet = responseEdmEntitySet;
     }
-
-    private EdmEntitySet responseEdmEntitySet;
-
 }

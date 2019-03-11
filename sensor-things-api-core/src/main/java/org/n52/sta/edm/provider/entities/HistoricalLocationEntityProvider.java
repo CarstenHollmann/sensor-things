@@ -55,11 +55,13 @@ import org.springframework.stereotype.Component;
  * @author <a href="mailto:s.drost@52north.org">Sebastian Drost</a>
  */
 @Component
+@SuppressWarnings("checkstyle:avoidstaticimport")
 public class HistoricalLocationEntityProvider extends AbstractSensorThingsEntityProvider {
 
     // Entity Type Name
     public static final String ET_HISTORICAL_LOCATION_NAME = "HistoricalLocation";
-    public static final FullQualifiedName ET_HISTORICAL_LOCATION_FQN = new FullQualifiedName(NAMESPACE, ET_HISTORICAL_LOCATION_NAME);
+    public static final FullQualifiedName ET_HISTORICAL_LOCATION_FQN =
+            new FullQualifiedName(NAMESPACE, ET_HISTORICAL_LOCATION_NAME);
 
     //Entity Set Name
     public static final String ES_HISTORICAL_LOCATIONS_NAME = "HistoricalLocations";
@@ -96,8 +98,10 @@ public class HistoricalLocationEntityProvider extends AbstractSensorThingsEntity
         navPropLocationBinding.setTarget(ES_LOCATIONS_NAME);
 
         CsdlNavigationPropertyBinding navPropThingBinding = new CsdlNavigationPropertyBinding();
-        navPropThingBinding.setPath(ET_THING_NAME); // the path from entity type to navigation property
-        navPropThingBinding.setTarget(ES_THINGS_NAME); //target entitySet, where the nav prop points to
+        // the path from entity type to navigation property
+        navPropThingBinding.setPath(ET_THING_NAME);
+        //target entitySet, where the nav prop points to
+        navPropThingBinding.setTarget(ES_THINGS_NAME);
 
         List<CsdlNavigationPropertyBinding> navPropBindingList = new ArrayList<CsdlNavigationPropertyBinding>();
         navPropBindingList.addAll(Arrays.asList(navPropLocationBinding, navPropThingBinding));

@@ -39,8 +39,6 @@ import java.net.URISyntaxException;
 import org.apache.olingo.commons.api.data.Entity;
 import org.apache.olingo.commons.api.data.Property;
 import org.apache.olingo.commons.api.ex.ODataRuntimeException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 /**
@@ -50,9 +48,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class EntityCreationHelper {
-
-    @Autowired
-    ApplicationContext ctx;
 
     /**
      * Creates an ID for an entity
